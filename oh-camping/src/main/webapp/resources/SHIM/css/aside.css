@@ -1,0 +1,26 @@
+@charset "UTF-8";
+@import url("reset.css?5");
+
+#aside {
+	background: #6c6c6c;
+	width: 220px;
+	height: 100%;
+	color: #ffffff;	
+	font-family: 'Noto Sans KR', sans-serif;
+	font-size: 20px;
+}
+	
+	#aside > .navi {
+		padding-top: 15%;
+		padding-left: 25%;
+	}
+	
+	#aside > .navi a {
+		color: #ffffff;	
+	}
+	
+	#aside > .navi li {
+		margin-top: 20px;
+		
+	}
+

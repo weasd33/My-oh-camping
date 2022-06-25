@@ -1,0 +1,33 @@
+@charset "UTF-8";
+@import url("reset.css?5");
+
+.header {
+	color: #ffffff;	
+	font-family: 'Noto Sans KR', sans-serif;
+	font-size: 20px;
+	display: flex;
+	position: relative;
+	background: #6c6c6c;
+	width: 100%;
+	height: 6%;
+}
+
+	
+	.header > .left {
+		position: absolute;
+		margin-top: 13px;
+		margin-left: 50px;
+		left: 10px; 
+	}
+	
+	.header > .left > a {
+		color: #ffffff; 
+		text-decoration: none;
+	}
+
+	.header > .right {
+		position: absolute;
+		margin-top: 13px;
+		margin-right: 10px;
+		right: 10px;
+	}

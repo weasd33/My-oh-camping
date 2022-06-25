@@ -1,0 +1,153 @@
+@charset "UTF-8";
+
+#body {
+	font-family: 'Noto Sans KR', sans-serif;
+	weight: 100%;
+	height: 100%;
+	display: flex;
+}
+
+#main {
+	height: 100%;
+	background: #ebebeb;
+	flex-grow: 1;
+}
+
+#main > div {
+	font-size: 22px;
+	font-weight: bold;
+	margin-top: 3%;
+	margin-left: 5%;
+}
+
+#main > #section {
+	background: #ffffff;
+	margin: 3% 5% 6% 5%;
+	box-shadow: 5px 5px 15px 5px #a6a6a6;
+}
+
+#section thead {
+	display: block;
+}
+
+.division-table {
+	margin-bottom: 0px;
+	border-bottom: 2px solid #313131;
+}
+
+	.division-table th {
+		background: #b6b6b6;
+		color: #ffffff;
+		width: 10%;
+		padding-left: 20px;
+	}
+	
+	.division-table td {
+		width: 30%;
+	}
+
+.radio input[type='radio'] {
+	accent-color: #6f6f6f;
+	width: 20px;
+}
+
+.room .separator {
+	color: #860000;
+	font-weight: bold;
+}
+
+.date-range {
+	margin-left: 10px;
+	margin-right: 10px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.inquire-btn {
+	margin-left: 20px;
+	background-color: whitesmoke;
+	border: 3px solid #a3a1a1;
+    color: #6e6e6e;
+    padding: 5px 13px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.inquire-btn:hover {
+	margin-left: 20px;
+	border: 3px solid #a3a1a1;
+    padding: 5px 13px;
+    border-radius: 15px;
+	background-color: #cfcdcd;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.sales-body {
+	display: flex;
+	height: 570px;
+}
+
+.sales-table {
+	width: 28%;
+}
+
+.sales-table thead {
+	background: #dfdfdf;
+}
+
+.sales-thead th {
+	text-align: center;
+	width: 130px;
+}
+	
+.sales-tbody {
+	height: 460px;
+	display: block;
+	overflow: auto;
+}
+
+	.sales-tbody td {
+		text-align: center;
+		width: 130px;
+	}
+
+.sales-table .sales-total {
+	padding-left: 28%;
+	padding-top: 17px;
+	font-weight: bold;
+	font-size: 17px;
+}
+
+.sales-total > span {
+	color: #ff0000;
+	font-size: 21px;
+}
+	
+.sales-content {
+	width: 72%;
+	border-left: 2px solid #313131;
+}
+
+.content-table .content-thead th {
+	width: 60px;
+	text-align: center;
+	background: #dfdfdf;
+	border-bottom: 2px solid #313131;
+}
+
+.content-table .content-thead th:nth-child(5) {
+	width: 120px;
+}
+
+.content-table .content-tbody td {
+	width: 60px;
+	text-align: center;
+}
+
+.content-table .content-tbody hr {
+	color: #ff0000;
+	height: 10px;
+}
+
+
