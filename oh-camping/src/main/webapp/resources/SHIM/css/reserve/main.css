@@ -98,7 +98,7 @@
 
 .sales-thead th {
 	text-align: center;
-	width: 130px;
+	width: 157px;
 }
 	
 .sales-tbody {
@@ -109,12 +109,24 @@
 
 	.sales-tbody td {
 		text-align: center;
-		width: 130px;
+		width: 157px;
 	}
 	
 .sales-content {
 	width: 60%;
 	border-left: 2px solid #313131;
+}
+
+.content-table {
+	height: 100%;
+}
+
+.content-table .content-thead {
+	border: none;
+}
+
+.content-table .content-thead td {
+	padding-left: 12px;	
 }
 
 .content-table .content-thead th {

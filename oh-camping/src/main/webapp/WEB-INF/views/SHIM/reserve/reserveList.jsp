@@ -7,12 +7,114 @@
 <meta charset="UTF-8">
 <title>예약 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/reserve/main.css" />?3" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/reserve/main.css" />?6" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		getList();
+	});
+	
+	/* 가격 format */
+	function AddComma(num) {
+		const regexp = /\B(?=(\d{3})+(?!\d))/g;
+		return num.toString().replace(regexp, ',');
+	}; 
+	
+	/* 객실 상태 format */
+	function roomStatus(date, status) {
+		var today = new Date();
+		var year = today.getFullYear().toString().slice(2); // 년도
+		var month = ('0' + (today.getMonth() + 1)).slice(-2); // 월
+		var day = ('0' + today.getDate()).slice(-2); // 일
+		
+		var now = year + '/' + month + '/' + day; // 현재 날짜
+		
+		var stat = "";
+		if((now <= date) && (status == 0)) {
+			stat = "green'><b>예약 가능</b>";
+		} else if(now <= date && status === 1) {
+			stat = "blue'><b>예약 완료</b>";
+		} else if(now > date && status === 1) {
+			stat = "red'><b>사용 완료</b>";
+		} else {
+			stat = "black'><b>미사용</b>";
+		}
+		return stat;
+	};
+	
+	/* 객실 전체 조회 */
+	function getList() { 
+		$.ajax({
+			url: '/test/reserve/list.do',
+			type: 'get',
+			dataType: 'json',
+			success: listView,
+			error: function() {alert("Error..");}
+		});
+	};
+	
+	 /* 객실 전체 View */
+	function listView(data) {
+		var list = "";
+		$.each(data, function(index, vo) {
+			list += "<tr onclick=getCont(" + vo["room_no"] + ");>";
+			list += "<td>" + vo["room_resdate"] + "</td>";
+			list += "<td>" + vo["room_no"] + "</td>";
+			list += "<td>" + vo["room_name"] + "</td>";
+			list += "<td>" + vo["room_mpeople"] + "</td>";
+			list += "<td>" + AddComma(vo["room_price"]) + "원</td>";
+			list += "<td style='color:" + roomStatus(vo["room_resdate"], vo["room_possible"]) + "</td>";
+			list += "</tr>";
+		});
+		$(".sales-tbody").html(list);
+	};
+
+	/* 객실,예약 상세 정보 */
+	function getCont(no) {
+		$.ajax({
+			url: '/test/reserve/cont.do',
+			data: {'room_no': no},
+			type: 'get',
+			dataType: 'json',
+			success: contView,
+			error: function() {alert("Error..");}
+		});
+	};
+	
+	/* 객실,예약 상세 정보 View */
+	function contView(data) {
+		var cont = "";
+		cont += "<tr class='content-thead'><th>객실 번호</th>";
+		cont += "<td>" + data.room_no + "</td></tr>";
+		cont += "<tr class='content-thead'><th>객실 이름</th>";
+		cont += "<td>" + data.room_name + "</td></tr>";
+		cont += "<tr class='content-thead'><th>예약자명</th>";
+		cont += "<td>" + data.mem_name + "</td></tr>";
+		cont += "<tr class='content-thead'><th>아이디</th>";
+		cont += "<td>" + data.mem_id + "</td></tr>";
+		cont += "<tr class='content-thead'><th>이메일</th>";
+		cont += "<td>" + data.mem_email + "</td></tr>";
+		cont += "<tr class='content-thead'><th>전화번호</th>";
+		cont += "<td>" + data.mem_phone + "</td></tr>";
+		cont += "<tr class='content-thead'><th>인원 수</th>";
+		cont += "<td>" + data.room_mpeople + "</td></tr>";
+		cont += "<tr class='content-thead'><th>결제 가격</th>";
+		cont += "<td>" + AddComma(data.room_price) + "원</td></tr>";
+		cont += "<tr class='content-thead'><th>결제일</th>";
+		cont += "<td>" + data.payment_orderdate + "</td></tr>";
+		cont += "<tr class='content-thead'><th>사용일</th>";
+		cont += "<td>" + data.room_resdate + "</td></tr>";
+		cont += "<tr class='content-thead'><th>사용 여부</th>";
+		cont += "<td>" + data.room_possible + "</td></tr>";
+		
+		$(".content-table").html(cont);
+	};
+	
+</script>
 </head>
 <body>
-
 	<header class="header">
 		<jsp:include page="../include/header.jsp" />
 	</header>
@@ -23,7 +125,7 @@
 		</aside>
 		
 		<main id="main">
-			<div>예약 목록</div>
+			<div><a href="./ajax.do">예약 목록</a></div>
 			<section id="section">
 		<%-- ----------------------- 분류 부분 ----------------------- --%>
 				<form action="<%=request.getContextPath() %>/reserve/list.do">
@@ -73,7 +175,7 @@
 				</form>
 				<%-- ----------------------- 예약 목록  ----------------------- --%>
 				<div class="sales-body">
-					<table class="table sales-table">
+					<table class="table table-hover sales-table">
 						<thead>
 							<tr class="sales-thead">
 								<th>날 짜</th>
@@ -84,185 +186,14 @@
 								<th>객실상태</th>
 							</tr>
 						</thead>
-						<tbody class="sales-tbody">
-							<tr>
-								<td>22/03/18</td>
-								<td>3185</td>
-								<td>계곡 1호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td><b>미사용</b></td>
-							</tr>
-							<tr>
-								<td>22/03/18</td>
-								<td>3181</td>
-								<td>대형 1호</td>
-								<td>6</td>
-								<td>400,000원</td>
-								<td style="color: red"><b>사용 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/03/24</td>
-								<td>3245</td>
-								<td>계곡 1호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: blue"><b>예약 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/03/24</td>
-								<td>3246</td>
-								<td>계곡 2호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: green"><b>예약 가능</b></td>
-							</tr>
-							<tr>
-								<td>22/04/18</td>
-								<td>4183</td>
-								<td>대형 3호</td>
-								<td>6</td>
-								<td>400,000원</td>
-								<td><b>미사용</b></td>
-							</tr>
-							<tr>
-								<td>22/04/20</td>
-								<td>4201</td>
-								<td>대형 1호</td>
-								<td>6</td>
-								<td>400,000원</td>
-								<td style="color: red"><b>사용 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/04/24</td>
-								<td>4245</td>
-								<td>계곡 1호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: blue"><b>예약 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/04/24</td>
-								<td>4246</td>
-								<td>계곡 2호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: green"><b>예약 가능</b></td>
-							</tr>
-							<tr>
-								<td>22/05/18</td>
-								<td>5183</td>
-								<td>대형 3호</td>
-								<td>6</td>
-								<td>400,000원</td>
-								<td><b>미사용</b></td>
-							</tr>
-							<tr>
-								<td>22/05/20</td>
-								<td>5201</td>
-								<td>대형 1호</td>
-								<td>6</td>
-								<td>400,000원</td>
-								<td style="color: red"><b>사용 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/05/24</td>
-								<td>5245</td>
-								<td>계곡 1호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: blue"><b>예약 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/05/24</td>
-								<td>5246</td>
-								<td>계곡 2호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: green"><b>예약 가능</b></td>
-							</tr>
-							<tr>
-								<td>22/06/18</td>
-								<td>6183</td>
-								<td>대형 3호</td>
-								<td>6</td>
-								<td>400,000원</td>
-								<td><b>미사용</b></td>
-							</tr>
-							<tr>
-								<td>22/06/20</td>
-								<td>6201</td>
-								<td>대형 1호</td>
-								<td>6</td>
-								<td>400,000원</td>
-								<td style="color: red"><b>사용 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/06/24</td>
-								<td>6245</td>
-								<td>계곡 1호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: blue"><b>예약 완료</b></td>
-							</tr>
-							<tr>
-								<td>22/06/24</td>
-								<td>6246</td>
-								<td>계곡 2호</td>
-								<td>4</td>
-								<td>300,000원</td>
-								<td style="color: green"><b>예약 가능</b></td>
-							</tr>
+						<tbody class="sales-tbody" style="cursor:pointer;">
+							<%-- Ajax 객실 List --%>
 						</tbody>
 					</table>
 					<%-- ----------------------- 예약 상세 정보 ----------------------- --%>
-					<c:set var="now" value="<%=new java.util.Date() %>"/>
 					<div class="sales-content">
 						<table class="table content-table">
-							<tr class="content-thead">
-								<th>객실 번호</th>
-								<td>6241</td>
-							</tr>
-							<tr class="content-thead">
-								<th>객실 이름</th>
-								<td>계곡 1호</td>
-							</tr>
-							<tr class="content-thead">
-								<th>예약자명</th>
-								<td>심규복</td>
-							</tr>
-							<tr class="content-thead">
-								<th>아이디</th>
-								<td>weasd33</td>
-							</tr>
-							<tr class="content-thead">
-								<th>이메일</th>
-								<td>weasd33@naver.com</td>
-							</tr>
-							<tr class="content-thead">
-								<th>전화번호</th>
-								<td>010-1234-5678</td>
-							</tr>
-							<tr class="content-thead">
-								<th>인원 수</th>
-								<td>4</td>
-							</tr>
-							<tr class="content-thead">
-								<th>결제 가격</th>
-								<td>300,000원</td>
-							</tr>
-							<tr class="content-thead">
-								<th>결제일</th>
-								<td>2022-06-20</td>
-							</tr>
-							<tr class="content-thead">
-								<th>사용일</th>
-								<td>2022-06-24</td>
-							</tr>
-							<tr class="content-thead">
-								<th>사용 여부</th>
-								<td>사용 예정</td>
-							</tr>
+						<%-- Ajax 예약 상세 List --%>
 						</table>
 					</div>
 				</div>

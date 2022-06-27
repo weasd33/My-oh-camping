@@ -11,7 +11,7 @@
 			</li>
 			<li>
 				<span class="icon-docs"></span>
-				<a href="<%=request.getContextPath() %>/reserve/list.do">예약 관리</a>
+				<a href="<%=request.getContextPath() %>/reserve/main.do">예약 관리</a>
 			</li>
 			<li>
 				<span class="icon-money"></span>
