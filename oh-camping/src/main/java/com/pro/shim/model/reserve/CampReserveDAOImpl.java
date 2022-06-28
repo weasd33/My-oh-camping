@@ -1,6 +1,7 @@
 package com.pro.shim.model.reserve;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +23,9 @@ public class CampReserveDAOImpl implements CampReserveDAO {
 		return this.sqlSession.selectOne("reserve_cont", no);
 	}
 	
+	@Override
+	public List<CampReserveDTO> getReserveSort(Map<String, String> map) { // 예약 정렬 정보
+		return this.sqlSession.selectList("reserve_sort", map);
+	}
 	
 }

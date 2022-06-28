@@ -51,6 +51,17 @@
 	width: 20px;
 }
 
+.radio input[type='radio'] ~ label {
+	font-family: 'Noto Sans KR', sans-serif;
+	font-size: 16px;
+}
+
+.radio input[type='radio']:hover, input[type='radio'] ~ label:hover {
+	cursor: pointer;
+	font-weight: bold;
+	color: #400000;
+}
+
 .room .separator {
 	color: #860000;
 	font-weight: bold;
@@ -135,4 +146,40 @@
 	background: #dfdfdf;
 }
 
+.tooltip {
+  opacity: 1;
+  position: relative;
+  display: inline-block;
+}
 
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 350px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 1;
+  bottom: 135%;
+  margin-left: -220px;
+
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 55%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}

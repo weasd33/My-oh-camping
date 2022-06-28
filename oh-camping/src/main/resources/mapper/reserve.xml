@@ -14,11 +14,75 @@
 	<!-- 객실 전체 조회 -->
 	<select id="reserve_list" resultType="reserveDto"> 
 		SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE 
-		FROM CAMP_ROOM ORDER BY ROOM_RESDATE ASC, ROOM_NAME ASC
+		FROM CAMP_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -2)) AND TO_CHAR(ADD_MONTHS(SYSDATE, +2)) 
+        ORDER BY 1, 2
 	</select>
 	
 	<!-- 예약 상세 조회 -->
 	<select id="reserve_cont" parameterType="int" resultType="reserveDto">
 		SELECT * FROM RESERVE_ROOM WHERE ROOM_NO = #{no}
 	</select>
+	
+	<!-- 예약 정렬 조회 -->
+	<select id="reserve_sort" parameterType="Map" resultType="reserveDto">
+	
+		<if test='room_status.equals("status1")'> <!-- 예약 가능 -->
+			<if test='divide_room.equals("all_room")'> <!-- 객실 전체 -->
+				SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 0 ORDER BY 1, 2
+			</if>
+			<if test='!divide_room.equals("all_room")'> <!-- 해당 객실 -->
+				SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 0 AND ROOM_NAME = #{divide_room} ORDER BY 1, 2
+			</if>
+		</if>
+		<if test='room_status.equals("status2")'> <!-- 예약 완료 -->
+			<if test='divide_room.equals("all_room")'> <!-- 객실 전체 -->
+				SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 1 ORDER BY 1, 2
+			</if>
+			<if test='!divide_room.equals("all_room")'> <!-- 해당 객실 -->
+				SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 1 AND ROOM_NAME = #{divide_room} ORDER BY 1, 2
+			</if>
+		</if>
+		<if test='room_status.equals("status3")'> <!-- 사용 완료 -->
+			<if test='divide_room.equals("all_room")'> <!-- 객실 전체 -->
+				<![CDATA[
+					SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+					WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 1 ORDER BY 1, 2
+				]]>
+			</if>
+			<if test='!divide_room.equals("all_room")'> <!-- 해당 객실 -->
+				<![CDATA[
+					SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+					WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 1 AND ROOM_NAME = #{divide_room} ORDER BY 1, 2
+				]]>
+			</if>
+		</if>
+		<if test='room_status.equals("status4")'> <!-- 미사용 -->
+			<if test='divide_room.equals("all_room")'> <!-- 객실 전체 -->
+				<![CDATA[
+					SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+					WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 0 ORDER BY 1, 2
+				]]>
+			</if>
+			<if test='!divide_room.equals("all_room")'> <!-- 해당 객실 -->
+				<![CDATA[
+					SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+					WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 0 AND ROOM_NAME = #{divide_room} ORDER BY 1, 2
+				]]>
+			</if>
+		</if>
+	
+		<if test='room_status.equals("all_status") and divide_room.equals("all_room")'> <!-- 객실 전체 상태 + 모든 객실 -->
+			SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+			WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} ORDER BY 1, 2
+		</if>
+		<if test='room_status.equals("all_status") and !divide_room.equals("all_room")'> <!-- 객실 전체 상태 -->
+			SELECT ROOM_RESDATE, ROOM_NO, ROOM_NAME, ROOM_MPEOPLE, ROOM_PRICE, ROOM_POSSIBLE FROM CAMP_ROOM 
+			WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_NAME = #{divide_room} ORDER BY 1, 2
+		</if>
+	</select>
+	
 </mapper>
