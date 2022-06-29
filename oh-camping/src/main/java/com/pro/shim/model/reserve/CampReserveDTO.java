@@ -15,5 +15,5 @@ public class CampReserveDTO {
 	private String payment_orderdate;	// 결제일
 	private String room_resdate;		// 사용일
 	private int room_possible;			// 사용 여부
-	
+	private String payment_request;		// 요청 사항
 }

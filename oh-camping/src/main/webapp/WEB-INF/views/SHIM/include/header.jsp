@@ -5,7 +5,7 @@
 <link href="<c:url value="/resources/SHIM/fontello/css/fontello.css" />?1" rel="stylesheet">
 
 <div class="header">
-	<div class="left"><a href="<%=request.getContextPath() %>/main.do">Oh! Camping</a></div>
+	<div class="left"><a href="<%=request.getContextPath() %>/home.do">Oh! Camping</a></div>
 	<div class="right"><span class="icon-user"></span>관리자님</div>
 </div>
 

@@ -7,7 +7,7 @@
 		<ul>
 			<li>
 				<span class="icon-users"></span>
-				<a href="<%=request.getContextPath() %>/member_list.do">회원 관리</a>
+				<a href="<%=request.getContextPath() %>/main.do">회원 관리</a>
 			</li>
 			<li>
 				<span class="icon-docs"></span>

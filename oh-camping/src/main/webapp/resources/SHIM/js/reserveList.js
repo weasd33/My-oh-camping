@@ -124,12 +124,13 @@ $(document).ready(function() {
 				list += "<td>" + vo["room_resdate"] + "</td>";
 				list += "<td>" + vo["room_no"] + "</td>";
 				list += "<td>" + vo["room_name"] + "</td>";
-				list += "<td>" + vo["room_mpeople"] + "</td>";
+				list += "<td>" + vo["room_mpeople"] + "명</td>";
 				list += "<td>" + AddComma(vo["room_price"]) + "원</td>";
 				list += "<td style='color:" + roomStatus(vo["room_resdate"], vo["room_possible"]) + "</td>";
 				list += "</tr>";
 			});
 			
+			$(".sales-tbody").empty();
 			$(".sales-tbody").html(list);
 		}
 	};
@@ -168,7 +169,6 @@ $(document).ready(function() {
 	/* 객실,예약 상세 정보 View */
 	function contView(data) {
 		var cont = "";
-		
 		if(data.payment_orderdate != null) {
 			cont += "<tr class='content-thead'><th>객실 번호</th>";
 			cont += "<td>" + data.room_no + "</td></tr>";
@@ -192,7 +192,15 @@ $(document).ready(function() {
 			cont += "<td>" + data.room_resdate + "</td></tr>";
 			cont += "<tr class='content-thead'><th>사용 여부</th>";
 			cont += "<td>" + contStatus(data.room_resdate, data.room_possible) + "</td></tr>";
+			cont += "<tr class='content-thead'><th>요청 사항</th>";
 			
+			if(data.payment_request != null) {
+				cont += "<td>" + data.payment_request + "</td></tr>";
+			} else {
+				cont += "<td>요청 사항이 없습니다.</td></tr>";
+			}
+			
+			$(".content-table").empty();
 			$(".content-table").html(cont);
 		} else {
 			alert('예약 내역이 존재하지 않습니다.');
@@ -235,6 +243,7 @@ $(document).ready(function() {
 				sort += "</tr>";
 			});
 			
+			$(".sales-tbody").empty();
 			$(".sales-tbody").html(sort);
 		}
 	};

@@ -1,6 +1,8 @@
 package com.pro.shim.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,16 +24,24 @@ public class MemberController {
 	private final int rowsize = 10; // 한 페이지당 보여질 게시물 수
 	private int totalRecord = 0; // DB 상의 전체 게시물의 수
 
+	@RequestMapping("home.do")
+	public String home() { // 관리자 홈
+		return "SHIM/home";
+	}
+	
 	@RequestMapping("main.do")
-	public String main() { // 관리자 홈
-		return "SHIM/main";
+	public String main() { // 회원 목록
+		return "SHIM/member/memberList";
 	}
 
 	@RequestMapping("member_list.do")
-	public String list(@RequestParam(value = "page", defaultValue = "1") int page,
-			@RequestParam(value = "sortKey", required = false) String sortKey,
+	@ResponseBody
+	public Map<String, Object> list(@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "sortKey", required = false, defaultValue = "null") String sortKey,
 			@RequestParam(value = "num", defaultValue = "0") int num, Model model) { // 회원 목록 페이지
 
+		Map<String, Object> map = new HashMap<String, Object>();
+		
 		// 전체 회원 수
 		totalRecord = this.dao.getListCount();
 
@@ -55,20 +65,26 @@ public class MemberController {
 
 		if (num != 0) { // 상세 정보 조회
 			CampMemberDTO detailList = this.dao.getMemberDetail(num);
-			model.addAttribute("detailList", detailList);
+			map.put("memberCont", detailList);
 		}
 
-		model.addAttribute("List", list);
-		model.addAttribute("Paging", dto);
-		model.addAttribute("sortKey", sortKey);
-
-		return "SHIM/member/memberList";
+		map.put("list", list);
+		map.put("page", dto.getPage());
+		map.put("block", dto.getBlock());
+		map.put("startBlock", dto.getStartBlock());
+		map.put("endBlock", dto.getEndBlock());
+		map.put("allPage", dto.getAllPage());
+		map.put("sortKey", sortKey);
+		
+		return map;
 	}
 
 	@RequestMapping("member_search.do")
-	public String search(@RequestParam(value = "page", defaultValue = "1") int nowPage,
+	@ResponseBody
+	public Map<String, Object> search(@RequestParam(value = "page", defaultValue = "1") int nowPage,
 			@RequestParam("search") String search, @RequestParam("keyword") String keyword, Model model) {
 
+		Map<String, Object> map = new HashMap<String, Object>();
 		CampPageDTO dto;
 		List<CampMemberDTO> list;
 
@@ -87,30 +103,27 @@ public class MemberController {
 			list = this.dao.getSearchList(dto);
 		}
 
-		System.out
-				.println("현재 페이지 : " + nowPage + "\n항목 : " + search + "\n내용 : " + keyword + "\n총 개수 : " + totalRecord);
+		System.out.println("현재 페이지 : " + nowPage + "\n항목 : " + search + "\n내용 : " + keyword + "\n총 개수 : " + totalRecord);
 		System.out.println("===========================");
 
-		model.addAttribute("List", list);
-		model.addAttribute("Paging", dto);
-		model.addAttribute("search", search);
-		model.addAttribute("keyword", keyword);
+		map.put("list", list);
+		map.put("page", dto.getPage());
+		map.put("block", dto.getBlock());
+		map.put("startBlock", dto.getStartBlock());
+		map.put("endBlock", dto.getEndBlock());
+		map.put("allPage", dto.getAllPage());
+		map.put("search", search);
+		map.put("keyword", keyword);
 
-		return "SHIM/member/memberSearchList";
+		return map;
 	}
 
-	@RequestMapping(value = "member_delete.do", produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String delete(@RequestParam("num") int num, @RequestParam("page") int page,
-						@RequestParam("sortKey") String sortKey) {
+	@RequestMapping("member_delete.do")
+	public String delete(@RequestParam("num") int num) {
 
-		int result = this.dao.memberDelete(num);
-		System.out.println(sortKey);
-		if(result > 0 ) { this.dao.updateSequence(num); }
+		if(this.dao.memberDelete(num) > 0) { this.dao.updateSequence(num); }
 		
-		return "<script>alert('탈퇴 완료');"
-				+ "location.href='member_list.do?page=" + page + "&sortKey=" + sortKey + "'"
-				+ "</script>";
+		return "SHIM/member/memberList";
 	}
 }
 

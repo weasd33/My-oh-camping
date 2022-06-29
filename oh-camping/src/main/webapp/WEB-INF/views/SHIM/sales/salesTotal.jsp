@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <title>매출 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/sales/main.css" />?16" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/sales/main.css" />?17" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
@@ -158,7 +158,7 @@
 		}
 		count += 100000;
 		total.innerHTML = new Intl.NumberFormat().format(count);
-	}, 10);
+	}, 1);
 
 	/* 라디오 버튼 변화 시 기간 초기화 */
 	$(function() {
