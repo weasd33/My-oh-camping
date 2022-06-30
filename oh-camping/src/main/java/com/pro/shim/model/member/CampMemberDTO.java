@@ -10,7 +10,5 @@ public class CampMemberDTO {
 	private String mem_name; 		// 이름
 	private String mem_phone; 		// 전화번호
 	private String mem_email; 		// 이메일
-	private String mem_regdate; 	// 가입일
-	private String mem_condate; 	// 최근 접속일
 
 }

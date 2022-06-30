@@ -27,6 +27,14 @@
 	</select>
 	
 	<!-- 회원 정렬 조회 -->
+	<select id="sort_no" parameterType="pageDto" resultType="memberDto">
+		<![CDATA[
+			SELECT * FROM
+			 (SELECT M.*, ROW_NUMBER() OVER(ORDER BY MEMBER_NO ASC) RNUM FROM CAMP_MEMBER M)
+			 	WHERE RNUM >= #{startNo} AND RNUM <= #{endNo}
+	 	]]>
+	</select>
+	
 	<select id="sort_id" parameterType="pageDto" resultType="memberDto">
 		<![CDATA[
 			SELECT * FROM
@@ -51,23 +59,11 @@
 	 	]]>
 	</select>
 	
-	<select id="sort_joindate" parameterType="pageDto" resultType="memberDto">
-		<![CDATA[
-			SELECT * FROM
-			 (SELECT M.*, ROW_NUMBER() OVER(ORDER BY MEM_REGDATE ASC) RNUM FROM CAMP_MEMBER M)
-			 	WHERE RNUM >= #{startNo} AND RNUM <= #{endNo}
-	 	]]>
-	</select>
-	
-	<select id="sort_conndate" parameterType="pageDto" resultType="memberDto">
-		<![CDATA[
-			SELECT * FROM
-			 (SELECT M.*, ROW_NUMBER() OVER(ORDER BY MEM_CONDATE ASC) RNUM FROM CAMP_MEMBER M)
-			 	WHERE RNUM >= #{startNo} AND RNUM <= #{endNo}
-	 	]]>
-	</select>
-	
 	<!-- 검색 회원 수 -->
+	<select id="no_cnt" resultType="int">
+		SELECT COUNT(*) FROM CAMP_MEMBER WHERE MEMBER_NO LIKE '%' || #{keyword} || '%'
+	</select>
+	
 	<select id="id_cnt" resultType="int">
 		SELECT COUNT(*) FROM CAMP_MEMBER WHERE MEM_ID LIKE '%' || #{keyword} || '%'
 	</select>
@@ -81,6 +77,14 @@
 	</select>
 
 	<!-- 검색 회원 조회 -->
+	<select id="no" parameterType="pageDto" resultType="memberDto">
+		<![CDATA[
+			SELECT * FROM
+				(SELECT M.*, ROW_NUMBER() OVER(ORDER BY MEMBER_NO DESC) RNUM FROM CAMP_MEMBER M
+					WHERE MEMBER_NO LIKE '%' || #{keyword} || '%') WHERE RNUM >= #{startNo} AND RNUM <= #{endNo}
+		]]>
+	</select>
+	
 	<select id="id" parameterType="pageDto" resultType="memberDto">
 		<![CDATA[
 			SELECT * FROM

@@ -211,8 +211,8 @@ function contView(data) {
 function getSortList() {
 	var room_status = $("input[name=room_status]:checked").val(); // 객실 상태
 	var divide_room = $("#divide_room option:selected").val(); // 객실 분류
-	var start_date = $("input[name=start_date]").val(); // 시작 날짜
-	var end_date = $("input[name=end_date]").val(); // 끝 날짜
+	var start_date = $(".sDate").val(); // 시작 날짜
+	var end_date = $(".eDate").val(); // 끝 날짜
 
 	$.ajax({
 		url: '/test/reserve/sort.do',

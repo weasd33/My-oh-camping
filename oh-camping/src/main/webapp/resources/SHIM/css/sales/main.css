@@ -51,6 +51,12 @@
 	width: 20px;
 }
 
+.radio input[type='radio']:hover, input[type='radio'] ~ label:hover, select:hover {
+	cursor: pointer;
+	font-weight: bold;
+	color: #400000;
+}
+
 .room .separator {
 	color: #860000;
 	font-weight: bold;
@@ -150,4 +156,6 @@
 	height: 10px;
 }
 
-
+input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}

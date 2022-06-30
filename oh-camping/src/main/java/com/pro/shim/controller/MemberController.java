@@ -83,11 +83,11 @@ public class MemberController {
 	@ResponseBody
 	public Map<String, Object> search(@RequestParam(value = "page", defaultValue = "1") int nowPage,
 			@RequestParam("search") String search, @RequestParam("keyword") String keyword, Model model) {
-
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		CampPageDTO dto;
 		List<CampMemberDTO> list;
-
+		
 		// 검색 회원 수
 		totalRecord = this.dao.searchListCount(search, keyword);
 
@@ -102,7 +102,7 @@ public class MemberController {
 			dto = new CampPageDTO(nowPage, rowsize, totalRecord, search, keyword);
 			list = this.dao.getSearchList(dto);
 		}
-
+		
 		System.out.println("현재 페이지 : " + nowPage + "\n항목 : " + search + "\n내용 : " + keyword + "\n총 개수 : " + totalRecord);
 		System.out.println("===========================");
 

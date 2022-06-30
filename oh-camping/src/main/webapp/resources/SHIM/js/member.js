@@ -44,11 +44,10 @@ function listView(data) {
 		var sortKey = data.sortKey;
 		$.each(list, function(index, vo) {
 			res += "<tr onclick='detailView(" + vo["member_no"] + ")' style='cursor:pointer;'>";
+			res += "<td>" + vo["member_no"] + "</td>";
 			res += "<td>" + vo["mem_id"] + "</td>";
 			res += "<td>" + vo["mem_name"] + "</td>";
 			res += "<td>" + vo["mem_email"] + "</td>";
-			res += "<td>" + vo["mem_regdate"].substring(0, 10) + "</td>";
-			res += "<td>" + vo["mem_condate"].substring(0, 19) + "</td>";
 			res += "</tr>";
 		});
 		
@@ -100,11 +99,10 @@ function detailShow(data) {
 		alert('회원 정보가 존재하지 않습니다.');
 	} else {
 		res += "<h5 class='card-title'><span class='card-name'>" + cont.mem_name + "</span><span class='title'>님 정보</span></h5><hr class='card-line'>";
+		res += "<div class='card-text'><span class='icon-user-1 icon'></span>" + cont.member_no + "</div><hr>";
 		res += "<div class='card-text'><span class='icon-user-1 icon'></span>" + cont.mem_id + "</div><hr>";
 		res += "<div class='card-text'><span class='icon-mail icon'></span>" + cont.mem_email + "</div><hr>";
 		res += "<div class='card-text'><span class='icon-phone icon'></span>" + cont.mem_phone + "</div><hr>";
-		res += "<div class='card-text'><span class='icon-user-plus icon'></span>" + cont.mem_regdate.substring(0, 10) + "</div><hr>";
-		res += "<div class='card-text'><span class='icon-eye icon'></span>" + cont.mem_condate.substring(0, 19) + "</div><hr>";
 		res += "<div class='card-btn'>";
 		res += "<span><input class='btn btn-danger' type='button' value='탈퇴' onclick=\"if(confirm('해당 회원을 탈퇴시키겠습니까?')) { location.href='member_delete.do?num=" + cont.member_no + "' } else { return; }\"></span>";
 		res += "<span><input class='btn btn-secondary' type='button' value='취소' onclick='viewHidden();'></span>";
@@ -148,21 +146,18 @@ function viewHidden() { /* 취소 클릭 시 숨기기 */
 /* 회원 상세 정보 - End*/
 
 /* 검색 부분 */
-$(function() {
-	$('.search_btn').click(function() {
-		/* 정렬 옵션 초기화 */
-		$(".sort option:eq(0)").prop("selected", true);
-		
-		var search = $('.search_option').val();
-		var keyword = $('.search_key').val();
-		
-		if(keyword == "") {
-			alert("검색어를 입력해주세요.");
-		} else {
-			searchList(1, search, keyword);
-		}
-	});
-});
+function search() {
+	/* 정렬 옵션 초기화 */
+	$(".sort option:eq(0)").prop("selected", true);
+	var search = $('.search_option').val();
+	var keyword = $('.search_key').val();
+	
+	if(keyword == "") {
+		alert("검색어를 입력해주세요.");
+	} else {
+		searchList(1, search, keyword);
+	}
+};
 
 function searchList(page, search, keyword) {
 	$.ajax({
@@ -195,12 +190,11 @@ function searchView(data) {
 		var keyword = data.keyword;
 
 		$.each(list, function(index, vo) {
-			res += "<tr onclick='detailView()' style='cursor:pointer;'>";
+			res += "<tr onclick='detailView(" + vo["member_no"] + ")' style='cursor:pointer;'>";
+			res += "<td>" + vo["member_no"] + "</td>";
 			res += "<td>" + vo["mem_id"] + "</td>";
 			res += "<td>" + vo["mem_name"] + "</td>";
 			res += "<td>" + vo["mem_email"] + "</td>";
-			res += "<td>" + vo["mem_regdate"].substring(0, 10) + "</td>";
-			res += "<td>" + vo["mem_condate"].substring(0, 19) + "</td>";
 			res += "</tr>";
 		});
 		

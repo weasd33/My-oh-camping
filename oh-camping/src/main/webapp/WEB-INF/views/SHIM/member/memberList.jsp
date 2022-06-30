@@ -6,9 +6,9 @@
 <meta charset="UTF-8">
 <title>회원 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/member/main.css" />?3" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/member/main.css" />?4" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="<%=request.getContextPath() %>/resources/SHIM/js/member.js?1"></script>
+<script src="<%=request.getContextPath() %>/resources/SHIM/js/member.js?4"></script>
 </head>
 <body>
 	<header class="header">
@@ -29,24 +29,24 @@
 					<div class="sort_block">
 						<select name="sort" class="sort">
 						  <option value="null" selected>※정렬※</option>
+						  <option value="no">번호</option>
 						  <option value="id">아이디</option>
 						  <option value="name">성 명</option>
 						  <option value="email">이메일</option>
-						  <option value="joindate">가입일</option>
-						  <option value="conndate">접속일</option>
 						</select>
 					</div>
 		<%-- ----------------------- 검색 부분 ----------------------- --%>
-					<%-- <input type="hidden" name="page" value="${paging.getPage() }"> --%>
 					<div class="search">
 						<select class="search_option" name="search">
+						  <option value="no">번호</option>
 						  <option value="id">아이디</option>
 						  <option value="name">성 명</option>
 						  <option value="email">이메일</option>
 						</select>
 						<div class="search_key_btn">
-							<input class="search_key" type="search" name="keyword" placeholder="Search..."/>
-							<button class="search_btn" type="button">
+							<input class="search_key" type="search" name="keyword" placeholder="Search..."
+								onkeypress="if( event.keyCode == 13 ){search();}"/>
+							<button class="search_btn" type="button" onclick="search();">
 								<span class="icon-search"></span>
 							</button>
 						</div>
@@ -55,8 +55,7 @@
 		<%-- ----------------------- 목록 부분 ----------------------- --%>
 				<table class="table table-hover">
 					<tr class="thead">
-						<th>아이디</th> <th>성 명</th>
-						<th>이메일</th> <th>가입일</th> <th>최근 접속일</th> 
+						<th>No.</th> <th>아이디</th> <th>성 명</th> <th>이메일</th>
 					</tr>
 					<tbody class="detail-user">
 					<%-- Ajax 회원 조회 --%>

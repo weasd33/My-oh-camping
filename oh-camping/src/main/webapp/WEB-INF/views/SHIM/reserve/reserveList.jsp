@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <title>예약 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/reserve/main.css" />?16" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/reserve/main.css" />?17" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/resources/SHIM/js/reserveList.js?3"></script>
 </head>
@@ -71,9 +71,9 @@
 					<tr>
 						<th>기 간</th>
 						<td>
-							<input type="date" class="sDate" name="start_date" value="${sDate }"/>
+							<input type="date" class="sDate"/>
 							<span class="date-range">~</span> 
-							<input type="date" class="eDate" name="end_date" value="${eDate }"/> 
+							<input type="date" class="eDate"/> 
 							<input class="inquire-btn" type="button" onclick="getSortList()" value="조회" />
 						</td>
 					</tr>

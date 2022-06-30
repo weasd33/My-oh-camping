@@ -25,13 +25,13 @@ public class CampMemberDAOImpl implements CampMemberDAO {
 	}
 
 	@Override
-	public List<CampMemberDTO> getSortList(String sortKey, CampPageDTO dto) {
+	public List<CampMemberDTO> getSortList(String sortKey, CampPageDTO dto) { // 회원 정렬 조회
 		return this.sqlSession.selectList("sort_" + sortKey, dto);
 	}
 	
 	@Override
 	public int searchListCount(String search, String keyword) { // 검색 회원 수
-		// search : id, name, email
+		// search : no, id, name, email
 		return this.sqlSession.selectOne(search + "_cnt", keyword);
 	}
 
