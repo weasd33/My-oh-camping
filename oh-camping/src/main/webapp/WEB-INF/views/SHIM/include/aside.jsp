@@ -15,7 +15,7 @@
 			</li>
 			<li>
 				<span class="icon-money"></span>
-				<a href="<%=request.getContextPath() %>/sales/list.do">매출 관리</a>
+				<a href="<%=request.getContextPath() %>/sales/main.do">매출 관리</a>
 			</li>
 		</ul>
 	</nav>

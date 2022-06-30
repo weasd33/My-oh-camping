@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pro.shim.model.sales.CampSalesDAO;
 
@@ -21,13 +22,17 @@ public class SalesController {
 	@Autowired
 	private CampSalesDAO dao;
 	
+	@RequestMapping("main.do")
+	public String main() {
+		return "SHIM/sales/salesTotal";
+	};
+	
 	@RequestMapping("list.do")  // 분류 매출 관련
-	public String sortTotal(@RequestParam(value = "radio_date", required = false, defaultValue = "all_date") String date,
+	@ResponseBody
+	public Map<String, Object> sortTotal(@RequestParam(value = "radio_date", required = false, defaultValue = "all_date") String date,
 						@RequestParam(value = "divide_room", required = false, defaultValue = "all_room") String room, 
 						@RequestParam(value = "start_date", required = false) String start_date, 
 						@RequestParam(value = "end_date", required = false) String end_date, Model model) {
-		
-		System.out.println("======================================");
 		
 		Map<String, String> map = new HashMap<String, String>();
 		
@@ -66,14 +71,16 @@ public class SalesController {
 		map.put("end_date", format_ED); // 끝 날짜
 		map.put("room", room); // 객실 이름
 		
-		model.addAttribute("allList", this.dao.getSalesList(map)); // 날짜별 매출 목록
-		model.addAttribute("total", this.dao.getSalesTotal(map)); // 날짜별 매출 총액
-		model.addAttribute("totalList", this.dao.getTotalList(map)); // 날짜별 매출 통계
-		model.addAttribute("date", date); // 날짜
-		model.addAttribute("room", room); // 객실
-		model.addAttribute("sDate", start_date); // 시작 날짜
-		model.addAttribute("eDate", end_date); // 끝 날짜
+		Map<String, Object> data = new HashMap<String, Object>();
 		
-		return "SHIM/sales/salesTotal";
+		data.put("allList", this.dao.getSalesList(map)); // 날짜별 매출 목록
+		data.put("total", this.dao.getSalesTotal(map)); // 날짜별 매출 총액
+		data.put("totalList", this.dao.getTotalList(map)); // 날짜별 매출 통계
+		data.put("date", date); // 날짜
+		data.put("room", room); // 객실
+		data.put("sDate", start_date); // 시작 날짜
+		data.put("eDate", end_date); // 끝 날짜
+		
+		return data;
 	}
 }

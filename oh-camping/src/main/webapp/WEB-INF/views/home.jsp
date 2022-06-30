@@ -6,7 +6,7 @@
 </head>
 <body>
 
-	<a href="<%=request.getContextPath()%>/main.do">심규복-사용자 관리 페이지</a>
+	<a href="<%=request.getContextPath()%>/home.do">심규복-사용자 관리 페이지</a>
 	
 </body>
 </html>
