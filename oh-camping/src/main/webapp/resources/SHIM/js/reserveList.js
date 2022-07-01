@@ -13,7 +13,6 @@ function dateFormat() {
 	var now = Year + '-' + Month + '-' + Day; // 오늘
 	var eDay = ('0' + (Today.getDate() - 1)).slice(-2);
 	var eNow = Year + '-' + Month + '-' + eDay; // 하루 전
-	
 	var nextMonth = ('0' + (Today.getMonth() + 2)).slice(-2); // 한달 후
 	var nextDate = Year + '-' + nextMonth + '-' + Day; // 한달 후 날짜
 	
@@ -169,6 +168,10 @@ function getCont(no) {
 /* 객실,예약 상세 정보 View */
 function contView(data) {
 	var cont = "";
+	
+	var room_resdate = data.room_resdate;
+	room_resdate = room_resdate.replace(/^22/, '2022').replace(/[/]/g, '-');
+	
 	if(data.payment_orderdate != null) {
 		cont += "<tr class='content-thead'><th>객실 번호</th>";
 		cont += "<td>" + data.room_no + "</td></tr>";
@@ -183,13 +186,13 @@ function contView(data) {
 		cont += "<tr class='content-thead'><th>전화번호</th>";
 		cont += "<td>" + data.mem_phone + "</td></tr>";
 		cont += "<tr class='content-thead'><th>인원 수</th>";
-		cont += "<td>" + data.room_mpeople + "</td></tr>";
+		cont += "<td>" + data.room_mpeople + "명</td></tr>";
 		cont += "<tr class='content-thead'><th>결제 가격</th>";
 		cont += "<td>" + AddComma(data.room_price) + "원</td></tr>";
 		cont += "<tr class='content-thead'><th>결제일</th>";
 		cont += "<td>" + data.payment_orderdate + "</td></tr>";
 		cont += "<tr class='content-thead'><th>사용일</th>";
-		cont += "<td>" + data.room_resdate + "</td></tr>";
+		cont += "<td>" + room_resdate + "</td></tr>";
 		cont += "<tr class='content-thead'><th>사용 여부</th>";
 		cont += "<td>" + contStatus(data.room_resdate, data.room_possible) + "</td></tr>";
 		cont += "<tr class='content-thead'><th>요청 사항</th>";
@@ -237,7 +240,7 @@ function sortView(data) {
 			sort += "<td>" + vo["room_resdate"] + "</td>";
 			sort += "<td>" + vo["room_no"] + "</td>";
 			sort += "<td>" + vo["room_name"] + "</td>";
-			sort += "<td>" + vo["room_mpeople"] + "</td>";
+			sort += "<td>" + vo["room_mpeople"] + "명</td>";
 			sort += "<td>" + AddComma(vo["room_price"]) + "원</td>";
 			sort += "<td style='color:" + roomStatus(vo["room_resdate"], vo["room_possible"]) + "</td>";
 			sort += "</tr>";

@@ -1,12 +1,14 @@
 package com.pro.shim.model.member;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.pro.shim.model.CampPageDTO;
+import com.pro.shim.model.reserve.CampReserveDTO;
 
 @Repository
 public class CampMemberDAOImpl implements CampMemberDAO {
@@ -53,6 +55,16 @@ public class CampMemberDAOImpl implements CampMemberDAO {
 	@Override
 	public void updateSequence(int num) { // 시퀀스 갱신
 		this.sqlSession.update("seq", num);
+	}
+
+	@Override
+	public List<CampReserveDTO> getReserveList(Map<String, Object> map) { // 해당 회원 예약 내역
+		return this.sqlSession.selectList("reserveList", map);
+	}
+
+	@Override
+	public int getReserveCount(String id) { // 해당 회원 예약 수
+		return this.sqlSession.selectOne("reserveCnt", id);
 	}
 
 }

@@ -8,6 +8,7 @@
  	memberDao = com.pro.shim.model.member.CampMemberDAO   
  	memberDto = com.pro.shim.model.member.CampMemberDTO
  	pageDto = com.pro.shim.model.CampPageDTO
+ 	reserveDto = com.pro.shim.model.reserve.CampReserveDTO
  -->
      
 <mapper namespace="memberDao">
@@ -109,6 +110,7 @@
 		]]>
 	</select>
 	
+	<!-- 회원 정보 -->
 	<select id="detail" parameterType="int" resultType="memberDto">
 		SELECT * FROM CAMP_MEMBER WHERE MEMBER_NO = #{member_no}
 	</select>
@@ -123,6 +125,17 @@
 		UPDATE CAMP_MEMBER SET MEMBER_NO = MEMBER_NO - 1 WHERE MEMBER_NO > #{num}
 	</update>
 	
+	<!-- 해당 회원 예약 수 -->
+	<select id="reserveCnt" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM RESERVE_ROOM WHERE MEM_ID = #{id}
+	</select>
+	
+	<!-- 해당 회원 예약 목록 -->
+	<select id="reserveList" parameterType="Map" resultType="reserveDto">
+		SELECT * FROM 
+		(SELECT ROWNUM NUM, R.* FROM RESERVE_ROOM R WHERE MEM_ID = #{id}) 
+		WHERE NUM BETWEEN #{startNo} AND #{endNo}
+	</select>
 </mapper>
   
   

@@ -43,7 +43,7 @@ function listView(data) {
 		var allPage = data.allPage;
 		var sortKey = data.sortKey;
 		$.each(list, function(index, vo) {
-			res += "<tr onclick='detailView(" + vo["member_no"] + ")' style='cursor:pointer;'>";
+			res += "<tr onclick='detailView(" + vo["mem_id"] + ")' style='cursor:pointer;'>";
 			res += "<td>" + vo["member_no"] + "</td>";
 			res += "<td>" + vo["mem_id"] + "</td>";
 			res += "<td>" + vo["mem_name"] + "</td>";
@@ -81,10 +81,11 @@ function listView(data) {
 /* 회원 전체 조회 - End */
 
 /* 회원 상세 정보 */
-function detailView(num) { /* 정보 클릭 시 보이기*/
+function detailView(mem_id) { /* 정보 클릭 시 보이기*/
+	console.log(mem_id);
 	$.ajax({
-		url: '/test/member_list.do',
-		data: { 'num': num },
+		url: '/test/member_detail.do',
+		data: { 'mem_id': mem_id },
 		type: 'get',
 		dataType: 'json',
 		success: detailShow,
@@ -99,11 +100,11 @@ function detailShow(data) {
 		alert('회원 정보가 존재하지 않습니다.');
 	} else {
 		res += "<h5 class='card-title'><span class='card-name'>" + cont.mem_name + "</span><span class='title'>님 정보</span></h5><hr class='card-line'>";
-		res += "<div class='card-text'><span class='icon-user-1 icon'></span>" + cont.member_no + "</div><hr>";
 		res += "<div class='card-text'><span class='icon-user-1 icon'></span>" + cont.mem_id + "</div><hr>";
 		res += "<div class='card-text'><span class='icon-mail icon'></span>" + cont.mem_email + "</div><hr>";
 		res += "<div class='card-text'><span class='icon-phone icon'></span>" + cont.mem_phone + "</div><hr>";
 		res += "<div class='card-btn'>";
+		res += "<span><input class='btn btn-primary' type='button' value='수정' onclick='modify(" + cont.member_no + ");'/></span>";
 		res += "<span><input class='btn btn-danger' type='button' value='탈퇴' onclick=\"if(confirm('해당 회원을 탈퇴시키겠습니까?')) { location.href='member_delete.do?num=" + cont.member_no + "' } else { return; }\"></span>";
 		res += "<span><input class='btn btn-secondary' type='button' value='취소' onclick='viewHidden();'></span>";
 		res += "</div>";
@@ -144,6 +145,41 @@ function viewHidden() { /* 취소 클릭 시 숨기기 */
 	});
 };
 /* 회원 상세 정보 - End*/
+
+/* 회원 수정 */
+function modify(num) {
+	$.ajax({
+		url: '/test/member_modify.do',
+		data: { 'num': num },
+		type: 'get',
+		dataType: 'json',
+		success: modifyView,
+		error: function() {alert("Modify Error...");}
+	});
+};
+
+function modifyView(data) {
+	res = "";
+	if(data == null) {
+		alert('Modify Error...');
+	} else {
+		res += "<h5 class='card-title'><span class='card-name'><input value='" + data.mem_name + "' required/></span><span class='title'>님 정보</span></h5><hr class='card-line'>";
+		res += "<div class='card-text'><span class='icon-user-1 icon'></span><input value='" + data.mem_id + "' required/></div><hr>";
+		res += "<div class='card-text'><span class='icon-user-1 icon'></span><input type='password' value='" + data.mem_pwd + "' required/></div><hr>";
+		res += "<div class='card-text'><span class='icon-user-1 icon'></span><input type='password' value='" + data.mem_pwd + "' required/></div><hr>";
+		res += "<div class='card-text'><span class='icon-mail icon'></span><input value='" + data.mem_email + "' required/></div><hr>";
+		res += "<div class='card-text'><span class='icon-phone icon'></span><input value='" + data.mem_phone + "' required/></div><hr>";
+		res += "<div class='card-btn'>";
+		res += "<span><input class='btn btn-primary' type='button' value='완료' onclick='modify(" + data.member_no + ");'/></span>";
+		res += "<span><input class='btn btn-danger' type='button' value='탈퇴' onclick=\"if(confirm('해당 회원을 탈퇴시키겠습니까?')) { location.href='member_delete.do?num=" + data.member_no + "' } else { return; }\"></span>";
+		res += "<span><input class='btn btn-secondary' type='button' value='취소' onclick='viewHidden();'></span>";
+		res += "</div>";
+	}
+	$(".card-body").empty();
+	$(".card-body").html(res);
+};
+
+/* 회원 수정 */
 
 /* 검색 부분 */
 function search() {

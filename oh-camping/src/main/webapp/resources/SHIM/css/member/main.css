@@ -33,8 +33,7 @@
 
 .thead {
 	background: #ebebeb;
-	border-top: 1px solid #9b9b9b;
-	border-bottom: 1px solid #9b9b9b;
+	border-top: 2px solid #636363;
 	pointer-events: none;
 }
 
@@ -128,22 +127,24 @@
 
 .detail-modal { 
 	visibility: hidden;
+	/* visibility: visible; */
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 300px;
+	width: 700px;
 	height: auto;
 	z-index: 0;
 	background: #f7f7f7;
 }
 
-.card-btn {
-	padding-left: 25%;
+.card-top, .card-text {
+	display: flex;
+	justify-content: space-between;
 }
 
-.btn-danger {
-	margin-right: 20px;
+.btn-cancel {
+	cursor: pointer;
 }
 
 select:hover {
@@ -151,3 +152,171 @@ select:hover {
 	font-weight: bold;
 	color: #400000;
 }
+
+.detail-table {
+	width: 100%;
+}
+
+	.detail-table td {
+		border-bottom: 2.5px solid #919191;
+		height: 70px;
+		width: 50%;
+	}
+
+.btn-detail {
+	position: relative;
+	color: white; 
+	padding: 4px 14px;  
+	margin-right: 5px;
+  	font-size: 14px;
+	display: inline-block;
+	border: 1px solid rgba(0,0,0,0.21);
+	border-bottom-color: rgba(0,0,0,0.34);
+	text-shadow:0 1px 0 rgba(0,0,0,0.15);
+	box-shadow: 0 1px 0 rgba(255,255,255,0.34) inset, 
+	            0 2px 0 -1px rgba(0,0,0,0.13), 
+	            0 3px 0 -1px rgba(0,0,0,0.08), 
+	            0 3px 13px -1px rgba(0,0,0,0.21);
+}
+
+.btn-detail:active {
+	top: 1px;
+	border-color: rgba(0,0,0,0.34) rgba(0,0,0,0.21) rgba(0,0,0,0.21);
+	box-shadow: 0 1px 0 rgba(255,255,255,0.89),0 1px rgba(0,0,0,0.05) inset;
+	position: relative;
+}
+
+.btn-modify {
+	background-color: #ff8204;
+	box-shadow:0px 4px 0px #d96c00;
+}
+
+.btn-modify:active {
+	box-shadow: 0 0 #d96c00; background-color: #d96c00;
+}
+
+.btn-delete {
+	background-color: #fa5a5a;
+	box-shadow:0px 4px 0px #E04342;
+}
+
+.btn-delete:active {
+	box-shadow: 0 0 #ff4c4b; background-color: #ff4c4b;
+}
+
+.btn-inquiry {
+	background-color: #7fb1bf;
+	box-shadow: 0px 4px #74a3b0;
+}
+
+.btn-inquiry:active {
+	box-shadow: 0 0 #709CA8; background-color: #709CA8;
+}
+
+.btn-reserve {
+	background-color: #9abf7f;
+	box-shadow: 0px 4px 0px #87a86f;
+}
+
+.btn-reserve:active {
+	box-shadow: 0 0 #87a86f; background-color: #87a86f;
+}
+
+.card-btn {
+	text-align: right;
+}
+
+/* 문의 관련 */
+.inquiry {
+	margin-top: 20px;
+}
+
+.inquiry-head {
+	background: #7fb1bf;
+	color: #ffffff;
+}
+
+.inquiry-body .inquiry-title:hover {
+	background: #ddebee;
+}
+
+.inquiry-cont {
+	width: 650px;
+	height: 220px;
+	overflow: auto;
+	font-family: 'Noto Sans KR', sans-serif;
+	font-size: 16px;
+}
+
+.inquiry-page .cur-page a {
+	background: #7fb1bf;
+	color: #ffffff;
+}
+
+.del-inquiry {
+	background-color: #b3b3b3;
+	box-shadow: 0px 4px 0px #a0a0a0;
+	padding: 1px 8px;  
+}
+
+.del-inquiry:active {
+	box-shadow: 0 0 #949494; background-color: #949494;
+}
+/* 문의 관련 - End */
+
+/* 예약 관련  */
+.reserve {
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.reserve-head {
+	background: #9abf7f;
+	color: #ffffff;
+}
+
+.reserve-body .reserve-title:hover {
+	background: #e6efde;
+}
+
+.reserve-request {
+	width: 650px;
+	height: 220px;
+	overflow: auto;
+	font-family: 'Noto Sans KR', sans-serif;
+	font-size: 16px;
+}
+
+.reserve-page .cur-page a {
+	background: #9abf7f;
+	color: #ffffff;
+}
+
+.reserve-cont td {
+	border-bottom: none;
+}
+
+.del-reserve {
+	background-color: #b3b3b3;
+	box-shadow: 0px 4px 0px #a0a0a0;
+	padding: 1px 8px;  
+}
+
+.del-reserve:active {
+	box-shadow: 0 0 #949494; background-color: #949494;
+}
+
+/* 예약 관련  - End */
+
+
+
+
+
+
+
+
+
+
+
+
+/* 예약 관련 - End */

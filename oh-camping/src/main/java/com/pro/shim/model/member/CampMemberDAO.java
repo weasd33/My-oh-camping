@@ -1,8 +1,10 @@
 package com.pro.shim.model.member;
 
 import java.util.List;
+import java.util.Map;
 
 import com.pro.shim.model.CampPageDTO;
+import com.pro.shim.model.reserve.CampReserveDTO;
 
 public interface CampMemberDAO {
 	
@@ -29,5 +31,11 @@ public interface CampMemberDAO {
 
 	// 시퀀스 갱신
 	public void updateSequence(int num);
+
+	// 해당 회원 예약 내역
+	public List<CampReserveDTO> getReserveList(Map<String, Object> map);
+
+	// 해당 회원 예약 수
+	public int getReserveCount(String id);
 	
 }
