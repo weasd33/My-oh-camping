@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pro.shim.model.CampPageDTO;
+import com.pro.shim.model.member.CampInquiryDTO;
 import com.pro.shim.model.member.CampMemberDAO;
 import com.pro.shim.model.member.CampMemberDTO;
 import com.pro.shim.model.member.CampReserveInquiryPageDTO;
@@ -160,6 +161,65 @@ public class MemberController {
 		map.put("list", list);
 		map.put("page", nowPage);
 		map.put("mem_id", id);
+		
+		return map;
+	}
+	
+	// 해당 회원 문의 내역
+	@RequestMapping("member_inquiryList.do")
+	@ResponseBody
+	public Map<String, Object> inquiry(@RequestParam(value = "page", defaultValue = "1") int nowPage,
+			@RequestParam("mem_id") String id) {
+		
+		CampReserveInquiryPageDTO dto = new CampReserveInquiryPageDTO(nowPage, 5, this.dao.getInquiryCount(id));
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("startNo", dto.getStartNo());
+		map.put("endNo", dto.getEndNo());
+		map.put("id", id);
+		
+		// 문의 내역
+		List<CampInquiryDTO> list = this.dao.getInquiryList(map);
+		
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("list", list);
+		data.put("qa_userid", id);
+		data.put("page", dto.getPage());
+		data.put("block", dto.getBlock());
+		data.put("startBlock", dto.getStartBlock());
+		data.put("endBlock", dto.getEndBlock());
+		data.put("allPage", dto.getAllPage());
+		
+		return data;
+	}
+	
+	// 해당 문의 내역 상세 정보
+	@RequestMapping("member_inquiryCont.do")
+	@ResponseBody
+	public Map<String, Object> inquiryCont(@RequestParam("page") int nowPage, @RequestParam("qa_no") int no,
+			@RequestParam("qa_userid") String id) {
+
+		CampInquiryDTO list = this.dao.getInquiryCont(no);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("list", list);
+		map.put("page", nowPage);
+		map.put("qa_userid", id);
+		
+		return map;
+	}
+	
+	// 해당 문의 내역 삭제
+	@RequestMapping("inquiry_delete.do")
+	@ResponseBody
+	public Map<String, Object> inquiryDel(@RequestParam("page") int nowPage, @RequestParam("qa_no") int no,
+			@RequestParam("qa_userid") String id) {
+		
+		this.dao.deleteInquiry(no); // 문의 내역 삭제
+		this.dao.updateInquirySeq(no); // 삭제 후 시퀀스 갱신
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("page", nowPage);
+		map.put("qa_userid", id);
 		
 		return map;
 	}

@@ -141,9 +141,35 @@
 	<select id="reserveCont" parameterType="int" resultType="reserveDto">
 		SELECT * FROM RESERVE_ROOM WHERE ROOM_NO = #{room_no}
 	</select>
+	
+	<!-- 해당 회원 예약 수 -->
+	<select id="inquiryCnt" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM CAMP_QA WHERE QA_USERID = #{id}
+	</select>
+	
+	<!-- 해당 회원 문의 내역 -->
+	<select id="inquiryList" parameterType="Map" resultType="inquiryDto">
+		<![CDATA[
+			SELECT * FROM
+				(SELECT Q.*, ROW_NUMBER() OVER(ORDER BY QA_NO DESC) RNUM FROM CAMP_QA Q
+					WHERE QA_USERID = #{id}) WHERE RNUM >= #{startNo} AND RNUM <= #{endNo}
+		]]>					
+	</select>
+	
+	<!-- 해당 문의 상세 정보 -->
+	<select id="inquiryCont" parameterType="int" resultType="inquiryDto">
+		SELECT * FROM CAMP_QA WHERE QA_NO = #{no}
+	</select>
+	
+	<!-- 해당 문의 내역 삭제 -->
+	<delete id="inquiryDel" parameterType="int">
+		DELETE FROM CAMP_QA WHERE QA_NO = #{no}
+	</delete>
+	
+	<!-- 해당 문의 내역 삭제 후 시퀀스 갱신 -->
+	<update id="inquirySeq">
+		UPDATE CAMP_QA SET QA_NO = QA_NO -1 WHERE QA_NO > #{no}
+	</update>
 </mapper>
-  
-  
-  
   
   

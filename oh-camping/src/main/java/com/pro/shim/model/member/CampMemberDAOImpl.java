@@ -72,4 +72,28 @@ public class CampMemberDAOImpl implements CampMemberDAO {
 		return this.sqlSession.selectOne("reserveCont", room_no);
 	}
 
+	@Override
+	public int getInquiryCount(String id) { // 해당 회원 문의 수
+		return this.sqlSession.selectOne("inquiryCnt", id);
+	}
+
+	@Override
+	public List<CampInquiryDTO> getInquiryList(Map<String, Object> map) { // 해당 회원 문의 내역
+		return this.sqlSession.selectList("inquiryList", map);
+	}
+
+	@Override
+	public CampInquiryDTO getInquiryCont(int no) { // 해당 문의 상세 정보
+		return this.sqlSession.selectOne("inquiryCont", no);
+	}
+
+	@Override
+	public void deleteInquiry(int no) { // 해당 문의 삭제
+		this.sqlSession.delete("inquiryDel", no);
+	}
+
+	@Override
+	public void updateInquirySeq(int no) { // 해당 문의 삭제 후 시퀀스 갱신
+		this.sqlSession.update("inquirySeq", no);
+	}
 }

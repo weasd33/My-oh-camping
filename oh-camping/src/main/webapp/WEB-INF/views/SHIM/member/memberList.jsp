@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>회원 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/member/main.css" />?20" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/member/main.css" />?23" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
 <%-- <script src="<%=request.getContextPath() %>/resources/SHIM/js/member.js?6"></script> --%>
 <script type="text/javascript">
@@ -145,8 +145,8 @@ function detailShow(data) {
 	}
 };
 
-/* 해당 회원 예약 내역 */
-function roomDateFormat(date) {
+/* 날짜 포맷 22/01/01 -> 2022-01-01 */
+function DateFormat(date) {
 	return date.replace(/^22/, '2022').replace(/[/]/g, '-');
 }
 
@@ -172,6 +172,7 @@ function AddComma(num) {
 	return num.toString().replace(regexp, ',');
 }; 
 
+/* 해당 회원 예약 내역 */
 function reserveList(page, mem_id) { 
 	$.ajax({
 		url: '/test/member_reserveList.do',
@@ -191,8 +192,7 @@ function getReserveList(data) {
 	res += "<table class='table table-striped'>";
 	res += "<thead class='reserve-head'><tr>";
 	res += "<th>객실번호</th> <th>객실명</th> <th>사용일</th> <th>사용여부</th> <th></th>";
-	res += "</tr></thead>";
-	res += "<tbody class='reserve-body'>";
+	res += "</tr></thead><tbody class='reserve-body'>";
 	if(data.room_no == 0) {
 		res += "<tr align='center'><td colspan='5'><div><b>예약 내역이 없습니다.</b></div></td></tr>";
 		res += "</tbody></table>";
@@ -207,7 +207,7 @@ function getReserveList(data) {
 		$.each(list, function(index, vo) {
 			res += "<tr>";
 			res += "<td>"+ vo["room_no"] +"</td> <td>"+ vo["room_name"] +"</td>";
-			res += "<td>"+ roomDateFormat(vo["room_resdate"]) +"</td> <td>"+roomStatus(vo["room_resdate"])+"</td>";
+			res += "<td>"+ DateFormat(vo["room_resdate"]) +"</td> <td>"+roomStatus(vo["room_resdate"])+"</td>";
 			res += "<td><input class='btn-detail cont-reserve' type='button' value='상세보기' onclick='reserveCont("+ page +", \"" + vo["room_no"] + "\", \"" + vo["mem_id"] + "\")'></td>";
 			res += "</tr>";
 		});
@@ -236,6 +236,7 @@ function getReserveList(data) {
 		res += "</ul></nav>";
 	}
 	
+	$(".inquiry").empty();
 	$(".reserve").empty();
 	$(".reserve").html(res);
 };
@@ -275,12 +276,13 @@ function getReserveCont(data) {
 		res += "<th>결제 가격</th> <td>"+AddComma(list.room_price)+"원</td></tr>";
 		res += "<tr><th>인원 수</th> <td>"+list.room_mpeople+"명</td>";
 		res += "<th>사용 여부</th> <td>"+roomStatus(list.room_resdate)+"</td></tr>";
-		res += "<tr><th colspan='2'>요청사항:</th><th>사용일</th><td>"+roomDateFormat(list.room_resdate)+"</td></tr>";
+		res += "<tr><th colspan='2'>요청사항:</th><th>사용일</th><td>"+DateFormat(list.room_resdate)+"</td></tr>";
 		res += "<tr><td colspan='4'><div>";
 		res += "<pre class='reserve-request'>"+list.payment_request+"</pre></div>";
-		res += "<span class='icon-logout back-btn' onclick='reserveList("+page+", \""+mem_id+"\");'></span>";
+		res += "<span class='icon-logout reserve-back-btn' onclick='reserveList("+page+", \""+mem_id+"\");'></span>";
 		res += "</td></tr></tbody></table>";
 		
+		$(".inquiry").empty();
 		$(".reserve").empty();
 		$(".reserve").html(res);
 	}
@@ -288,7 +290,138 @@ function getReserveCont(data) {
 
 /* 해당 회원 예약 내역  - End */
 
+/* 해당 회원 문의 내역 */
+function inquiryList(page, mem_id) {
+	$.ajax({
+		url: '/test/member_inquiryList.do',
+		data: { 
+				'page': page,
+				'mem_id': mem_id
+			},
+		type: 'get',
+		dataType: 'json',
+		success: getInquiryList,
+		error: function() {alert("Detail Error..");}
+	});
+}
+
+function getInquiryList(data) {
+	res = "";
+	res += "<table class='table table-striped'>";
+	res += "<thead class='inquiry-head'><tr>";
+	res += "<th>No.</th> <th>유 형</th> <th>제 목</th><th>작성일</th> <th colspan='2'></th>";
+	res += "</tr></thead><tbody class='inquiry-body'>";
+	if(data.list.length == 0) {
+		res += "<tr align='center'><td colspan='6'><div><b>문의 내역이 없습니다.</b></div></td></tr>";
+		res += "</tbody></table>";
+	} else {
+		var list = data.list;
+		var qa_userid = data.qa_userid;
+		var page = data.page;
+		var block = data.block;
+		var startBlock = data.startBlock;
+		var endBlock = data.endBlock;
+		var allPage = data.allPage;
+		$.each(list, function(index, vo) {
+			res += "<tr><td>"+vo["qa_no"]+"</td> <td>"+vo["qa_type"]+"</td>";
+			res += "<td>"+vo["qa_title"]+"</td> <td>"+DateFormat(vo["qa_date"])+"</td>";
+			res += "<td><input class='btn-detail del-cont-inquiry' type='button' value='상세보기' onclick='inquiryCont("+ page +", \"" + vo["qa_no"] + "\", \"" + qa_userid + "\")'>";
+			res += "<input class='btn-detail del-cont-inquiry' type='button' value='삭제' onclick='inquiryDel("+ page +", \"" + vo["qa_no"] + "\", \"" + qa_userid + "\")'></td></tr>";
+		});
+		res += "</tbody></table>";
+		/* 문의 페이징 */
+		res += "<nav class='paging reserve-paging' aria-label='Page navigation example'>";
+		res += "<ul class='inquiry-page pagination justify-content-center'>";
+		
+		if(page > block) {
+			res += "<li class='page-item'><a class='page-link' onclick='inquiryList(1, \""+qa_userid+"\")'>«</a></li>";
+			res += "<li class='page-item'><a class='page-link' onclick='inquiryList(\""+(startBlock-1)+"\", \""+qa_userid+"\")'>‹</a></li>";
+		}
+		
+		for(var i=startBlock; i<=endBlock; i++) {
+			if(i == page) {
+				res += "<li class='page-item cur-page' aria-current='page'><a class='page-link'>" + i + "</a></li>";
+			} else {
+				res += "<a class='page-link' onclick='inquiryList(\""+i+"\", \""+qa_userid+"\")'>" + i + "</a>";
+			}
+		}
+		
+		if(endBlock < allPage) {
+			res += "<li class='page-item'><a class='page-link' onclick='inquiryList(\""+(endBlock+1)+"\", \""+qa_userid+"\")'>›</a></li>";
+			res += "<li class='page-item'><a class='page-link' onclick='inquiryList(\""+allPage+"\", \""+qa_userid+"\")'>»</a></li>";
+		}
+		res += "</ul></nav>"; 
+	}
+	
+	$(".reserve").empty();
+	$(".inquiry").empty();
+	$(".inquiry").html(res);
+}
+
+function inquiryCont(page, qa_no, qa_userid) {
+	$.ajax({
+		url: '/test/member_inquiryCont.do',
+		data: { 
+				'page': page,
+				'qa_no': qa_no,
+				'qa_userid': qa_userid
+			},
+		type: 'get',
+		dataType: 'json',
+		success: getInquiryCont,
+		error: function() {alert("inquiryCont Error..");}
+	});
+};
+
+function getInquiryCont(data) {
+	var list = data.list;
+	var page = data.page;
+	var id = data.qa_userid;
+	res = "";
+	if(data.list.qa_no == 0) {
+		alert('getInquiryCont Error..');
+	} else {
+		res += "<table class='table table-striped'>";
+		res += "<thead class='inquiry-head'><tr>";
+		res += "<th>No.</th> <th>유 형</th> <th>제 목</th><th>작성일</th> <th colspan='2'></th>";
+		res += "</tr></thead><tbody class='inquiry-body'><tr>";
+		res += "<td>"+list.qa_no+"</td> <td>"+list.qa_type+"</td>";
+		res += "<td>"+list.qa_title+"</td> <td>"+DateFormat(list.qa_date)+"</td>";
+		res += "<td><input class='btn-detail del-cont-inquiry' type='button' value='삭제' onclick='inquiryDel("+ page +", \"" + list.qa_no + "\", \"" + id + "\")'></td></tr>";
+		res += "<tr><td colspan='5'><div>";
+		res += "<pre class='inquiry-cont'>문의내역</pre></div>";
+		res += "<span class='icon-logout inquiry-back-btn' onclick='inquiryList("+page+", \""+id+"\");'></span>";
+		res += "</td></tr></tbody>";
+		
+		$(".inquiry").empty();
+		$(".inquiry").html(res);
+	}
+};
+
+function inquiryDel(page, qa_no, id) {
+	if(confirm("해당 문의 내역을 삭제하시겠습니까?")) {
+		$.ajax({
+			url: '/test/inquiry_delete.do',
+			data: { 
+					'page': page,
+					'qa_no': qa_no,
+					'qa_userid': id
+				},
+			type: 'get',
+			dataType: 'json',
+			success: function(data) { inquiryList(data.page, data.qa_userid) },
+			error: function() {alert("inquiryDel Error..");}
+		});
+	} else {
+		return;
+	}
+}
+
+/* 해당 회원 문의 내역 - End */
+
 function viewHidden() { /* 취소 클릭 시 숨기기 */
+	$(".reserve").empty();
+	$(".inquiry").empty();
 	$(".card-body").empty();
 	$('.detail-modal').css('visibility', 'hidden');
 	
@@ -308,39 +441,8 @@ function viewHidden() { /* 취소 클릭 시 숨기기 */
 /* 회원 상세 정보 - End*/
 
 /* 회원 수정 */
-/* function modify(num) {
-	$.ajax({
-		url: '/test/member_modify.do',
-		data: { 'num': num },
-		type: 'get',
-		dataType: 'json',
-		success: modifyView,
-		error: function() {alert("Modify Error...");}
-	});
-};
 
-function modifyView(data) {
-	res = "";
-	if(data == null) {
-		alert('Modify Error...');
-	} else {
-		res += "<h5 class='card-title'><span class='card-name'><input value='" + data.mem_name + "' required/></span><span class='title'>님 정보</span></h5><hr class='card-line'>";
-		res += "<div class='card-text'><span class='icon-user-1 icon'></span><input value='" + data.mem_id + "' required/></div><hr>";
-		res += "<div class='card-text'><span class='icon-user-1 icon'></span><input type='password' value='" + data.mem_pwd + "' required/></div><hr>";
-		res += "<div class='card-text'><span class='icon-user-1 icon'></span><input type='password' value='" + data.mem_pwd + "' required/></div><hr>";
-		res += "<div class='card-text'><span class='icon-mail icon'></span><input value='" + data.mem_email + "' required/></div><hr>";
-		res += "<div class='card-text'><span class='icon-phone icon'></span><input value='" + data.mem_phone + "' required/></div><hr>";
-		res += "<div class='card-btn'>";
-		res += "<span><input class='btn btn-primary' type='button' value='완료' onclick='modify(" + data.member_no + ");'/></span>";
-		res += "<span><input class='btn btn-danger' type='button' value='탈퇴' onclick=\"if(confirm('해당 회원을 탈퇴시키겠습니까?')) { location.href='member_delete.do?num=" + data.member_no + "' } else { return; }\"></span>";
-		res += "<span><input class='btn btn-secondary' type='button' value='취소' onclick='viewHidden();'></span>";
-		res += "</div>";
-	}
-	$(".card-body").empty();
-	$(".card-body").html(res);
-}; */
-
-/* 회원 수정 */
+/* 회원 수정 - End */
 
 /* 검색 부분 */
 function search() {
@@ -493,95 +595,7 @@ function searchView(data) {
 			</div>
 			
 				<%-- 문의 내역 --%>
-				<div class="inquiry">
-					<table class="table table-striped">
-						<thead class="inquiry-head">
-							<tr>
-								<th>No.</th> <th>유 형</th> <th>제 목</th>
-								<th>작성일</th> <th></th>
-							</tr>
-						</thead>
-						<tbody class="inquiry-body">
-							<tr class="inquiry-title" style='cursor:pointer;'>
-								<td>1</td> <td>객실문의</td>
-								<td>객실 관련 문의 드립니다.</td> <td>22/04/21</td>
-								<td><input class="btn-detail del-inquiry" type="button" value="삭제"></td>
-							</tr>
-							<tr>
-								<td>15</td> <td>결제</td>
-								<td>비용 관련 문의 드립니다.</td> <td>22/05/01</td>
-								<td><input class="btn-detail del-inquiry" type="button" value="삭제"></td>
-							</tr>
-							<tr>
-								<td>26</td> <td>객실</td>
-								<td>숙소 상태 문의드려요</td> <td>22/05/22</td>
-								<td><input class="btn-detail del-inquiry" type="button" value="삭제"></td>
-							</tr>
-							<tr>
-								<td>134</td> <td>기타</td>
-								<td>주차 문의 드립니다.</td> <td>22/06/01</td>
-								<td><input class="btn-detail del-inquiry" type="button" value="삭제"></td>
-							</tr>
-							<tr>
-								<td>166</td> <td>예약</td>
-								<td>예약 관련 문의 드립니다.</td> <td>22/07/01</td>
-								<td><input class="btn-detail del-inquiry" type="button" value="삭제"></td>
-							</tr>
-						</tbody>
-						
-						<!-- 문의 클릭 시 문의 내용 보임 -->
-						<!-- <tbody class="inquiry-body">
-							<tr class="inquiry-title" style='cursor:pointer;'>
-								<td>1</td> <td>객실문의</td>
-								<td>객실 관련 문의 드립니다.</td> <td>22/04/21</td>
-								<td><input class="btn-detail del-inquiry" type="button" value="삭제"></td>
-							</tr>
-							<tr>
-								<td colspan="5">
-									<div>
-										<pre class="inquiry-cont">
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-											객실 관련 문의 드립니다. 객실 관련 문의 드립니다.
-														객실 관련 문의 드립니다.객실 관련 문의 드립니다.
-										</pre>
-									</div>
-								</td>
-							</tr>
-						</tbody> -->
-					</table>
-					
-					<!-- 문의 페이징 -->
-					<nav class="paging inquiry-paging" aria-label="Page navigation example">
-						<ul class="inquiry-page pagination justify-content-center">
-							<li class='page-item cur-page' aria-current="page"><a class='page-link'>1</a></li>
-							<li class='page-item'><a class='page-link'>2</a></li>
-							<li class='page-item'><a class='page-link'>3</a></li>
-						</ul>
-					</nav>
-				</div>
-				
-				<%-- 문의 내역 - End --%>
+				<div class="inquiry"></div>
 				
 				<%-- 예약 내역 --%>
 				<div class="reserve"></div>

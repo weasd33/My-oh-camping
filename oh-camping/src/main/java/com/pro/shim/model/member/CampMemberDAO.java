@@ -40,5 +40,20 @@ public interface CampMemberDAO {
 
 	// 예약 상세 내역
 	public CampReserveDTO getReserveCont(int room_no);
+
+	// 해당 회원 문의 수
+	public int getInquiryCount(String id);
+	
+	// 해당 회원 문의 내역
+	public List<CampInquiryDTO> getInquiryList(Map<String, Object> map);
+
+	// 해당 문의 상세 정보
+	public CampInquiryDTO getInquiryCont(int no);
+
+	// 해당 문의 삭제
+	public void deleteInquiry(int no);
+
+	// 해당 문의 삭제 후 시퀀스 갱신
+	public void updateInquirySeq(int no);
 	
 }
