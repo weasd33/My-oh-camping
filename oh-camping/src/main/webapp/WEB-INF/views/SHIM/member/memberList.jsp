@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>회원 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/member/main.css" />?17" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/member/main.css" />?20" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
 <%-- <script src="<%=request.getContextPath() %>/resources/SHIM/js/member.js?6"></script> --%>
 <script type="text/javascript">
@@ -110,16 +110,16 @@ function detailShow(data) {
 	if(data == null) {
 		alert('회원 정보가 존재하지 않습니다.');
 	} else {
-		res += "<div class='card-top'><h5 class='card-title'><span class='card-name'>" + data.mem_id + "</span><span class='title'>님 정보</span></h5>";
-		res += "<span class='btn-cancel icon-user-1 icon' onclick='viewHidden();'></span></div><hr class='card-line'>";
+		res += "<div class='card-top'><h4 class='card-title'><span class='card-name'>" + data.mem_id + "</span><span class='title'>님 정보</span></h4>";
+		res += "<span class='icon-cancel btn-cancel' onclick='viewHidden();'></span></div><hr class='card-line'>";
 		res += "<table class='detail-table'>";
 		res += "<tr><td><span class='icon-user-1 icon'>" + data.mem_name + "</span></td>";
 		res += "<td><span class='icon-mail icon'>" + data.mem_email + "</span></td></tr>";		
-		res += "<tr><td><span class='icon-user-1 icon'>＊＊＊＊</span></td>";
+		res += "<tr><td><span class='icon-lock'>＊＊＊＊</span></td>";
 		res += "<td><span class='icon-phone icon'>" + data.mem_phone + "</span></td></tr>";
 		res += "<tr><td colspan='2' class='card-btn'>";
-		res += "<input class='btn-detail btn-inquiry' type='button' value='문의내역'/>";
-		res += "<input class='btn-detail btn-reserve' type='button' value='예약내역' onclick='reserveList(\"" + data.mem_id + "\");'/>";		
+		res += "<input class='btn-detail btn-inquiry' type='button' value='문의내역' onclick='inquiryList(1, \""+data.mem_id+"\");'/>";
+		res += "<input class='btn-detail btn-reserve' type='button' value='예약내역' onclick='reserveList(1, \""+data.mem_id+"\");'/>";		
 		res += "<input class='btn-detail btn-modify' type='button' value='정보수정'/>";
 		res += "<input class='btn-detail btn-delete' type='button' value='탈퇴'/>";
 		res += "</td></tr></table>";
@@ -146,10 +146,39 @@ function detailShow(data) {
 };
 
 /* 해당 회원 예약 내역 */
-function reserveList(mem_id) { 
+function roomDateFormat(date) {
+	return date.replace(/^22/, '2022').replace(/[/]/g, '-');
+}
+
+/* 객실 상태 format */
+function roomStatus(date) {
+	var today = new Date();
+	var year = today.getFullYear().toString().slice(2); // 년도
+	var month = ('0' + (today.getMonth() + 1)).slice(-2); // 월
+	var day = ('0' + today.getDate()).slice(-2); // 일
+	
+	var now = year + '/' + month + '/' + day; // 현재 날짜
+	
+	var stat = "";
+	if(now <= date) {stat = "사용예정"}
+	else {stat = "사용완료"}
+	
+	return stat;
+}
+
+/* 가격 format */
+function AddComma(num) {
+	const regexp = /\B(?=(\d{3})+(?!\d))/g;
+	return num.toString().replace(regexp, ',');
+}; 
+
+function reserveList(page, mem_id) { 
 	$.ajax({
 		url: '/test/member_reserveList.do',
-		data: { 'mem_id': mem_id },
+		data: { 
+				'page': page,
+				'mem_id': mem_id
+			},
 		type: 'get',
 		dataType: 'json',
 		success: getReserveList,
@@ -158,33 +187,105 @@ function reserveList(mem_id) {
 };
 
 function getReserveList(data) {
-	if(data.list.length == 0) {
-		alert('조회된 회원이 없습니다.'); // 여기서 부터 진행 22/07/02 오전 1시
+	var res = "";
+	res += "<table class='table table-striped'>";
+	res += "<thead class='reserve-head'><tr>";
+	res += "<th>객실번호</th> <th>객실명</th> <th>사용일</th> <th>사용여부</th> <th></th>";
+	res += "</tr></thead>";
+	res += "<tbody class='reserve-body'>";
+	if(data.room_no == 0) {
+		res += "<tr align='center'><td colspan='5'><div><b>예약 내역이 없습니다.</b></div></td></tr>";
+		res += "</tbody></table>";
 	} else {
-		var res = "";
 		var list = data.list;
+		var mem_id = data.mem_id;
 		var page = data.page;
 		var block = data.block;
 		var startBlock = data.startBlock;
 		var endBlock = data.endBlock;
 		var allPage = data.allPage;
+		$.each(list, function(index, vo) {
+			res += "<tr>";
+			res += "<td>"+ vo["room_no"] +"</td> <td>"+ vo["room_name"] +"</td>";
+			res += "<td>"+ roomDateFormat(vo["room_resdate"]) +"</td> <td>"+roomStatus(vo["room_resdate"])+"</td>";
+			res += "<td><input class='btn-detail cont-reserve' type='button' value='상세보기' onclick='reserveCont("+ page +", \"" + vo["room_no"] + "\", \"" + vo["mem_id"] + "\")'></td>";
+			res += "</tr>";
+		});
+		res += "</tbody></table>";
+		/* 예약 내역 페이징  */
+		res += "<nav class='paging reserve-paging' aria-label='Page navigation example'>";
+		res += "<ul class='reserve-page pagination justify-content-center'>";
+		
+		if(page > block) {
+			res += "<li class='page-item'><a class='page-link' onclick='reserveList(1, \""+mem_id+"\")'>«</a></li>";
+			res += "<li class='page-item'><a class='page-link' onclick='reserveList(\""+(startBlock-1)+"\", \""+mem_id+"\")'>‹</a></li>";
+		}
+		
+		for(var i=startBlock; i<=endBlock; i++) {
+			if(i == page) {
+				res += "<li class='page-item cur-page' aria-current='page'><a class='page-link'>" + i + "</a></li>";
+			} else {
+				res += "<a class='page-link' onclick='reserveList(\""+i+"\", \""+mem_id+"\")'>" + i + "</a>";
+			}
+		}
+		
+		if(endBlock < allPage) {
+			res += "<li class='page-item'><a class='page-link' onclick='reserveList(\""+(endBlock+1)+"\", \""+mem_id+"\")'>›</a></li>";
+			res += "<li class='page-item'><a class='page-link' onclick='reserveList(\""+allPage+"\", \""+mem_id+"\")'>»</a></li>";
+		}
+		res += "</ul></nav>";
+	}
+	
+	$(".reserve").empty();
+	$(".reserve").html(res);
+};
+
+// 예약 상세내역
+function reserveCont(page, room_no, mem_id) {
+	$.ajax({
+		url: '/test/member_reserveCont.do',
+		data: { 
+				'page': page,
+				'room_no': room_no,
+				'mem_id': mem_id
+			},
+		type: 'get',
+		dataType: 'json',
+		success: getReserveCont,
+		error: function() {alert("Detail Error..");}
+	});
+};
+
+function getReserveCont(data) {
+	var list = data.list;
+	var page = data.page; // 뒤로가기 시 원래 있던 곳으로 이동하기 위함
+	var mem_id = data.mem_id;
+	var res = "";
+	if(data.length == 0) {
+		alert('ReserveCont Error..');
+	} else {
 		res += "<table class='table table-striped'>";
 		res += "<thead class='reserve-head'><tr>";
-		res += "<th>객실번호</th> <th>객실명</th> <th>사용일</th> <th>사용여부</th> <th></th>";
+		res += "<th colspan='2'>예약 정보</th>  <th colspan='2'>결제 정보</th>";
 		res += "</tr></thead>";
-		$.each(list, function(index, vo) {
-			res += "<tbody class='reserve-body'>";
-			res += "<tr class='reserve-title' style='cursor:pointer;'>";
-			res += "<td>"+ vo["room_no"] +"</td> <td>"+ vo["room_name"] +"</td>";
-			res += "<td>"+ vo["room_resdate"] +"</td> <td>사용완료</td>";
-			res += "<td><input class='btn-detail del-reserve' type='button' value='삭제'></td>";
-			res += "</tr></tbody>";
-		});
-		res += "</table>";
+		res += "<tbody class='reserve-cont'><tr>";
+		res += "<th>객실 번호</th> <td>"+list.room_no+"</td>";
+		res += "<th>결제일</th> <td>"+list.payment_orderdate+"</td></tr>";
+		res += "<tr><th>객실 이름</th> <td>"+list.room_name+"</td>";
+		res += "<th>결제 가격</th> <td>"+AddComma(list.room_price)+"원</td></tr>";
+		res += "<tr><th>인원 수</th> <td>"+list.room_mpeople+"명</td>";
+		res += "<th>사용 여부</th> <td>"+roomStatus(list.room_resdate)+"</td></tr>";
+		res += "<tr><th colspan='2'>요청사항:</th><th>사용일</th><td>"+roomDateFormat(list.room_resdate)+"</td></tr>";
+		res += "<tr><td colspan='4'><div>";
+		res += "<pre class='reserve-request'>"+list.payment_request+"</pre></div>";
+		res += "<span class='icon-logout back-btn' onclick='reserveList("+page+", \""+mem_id+"\");'></span>";
+		res += "</td></tr></tbody></table>";
 		
+		$(".reserve").empty();
 		$(".reserve").html(res);
 	}
 };
+
 /* 해당 회원 예약 내역  - End */
 
 function viewHidden() { /* 취소 클릭 시 숨기기 */
@@ -392,7 +493,7 @@ function searchView(data) {
 			</div>
 			
 				<%-- 문의 내역 --%>
-				<%-- <div class="inquiry">
+				<div class="inquiry">
 					<table class="table table-striped">
 						<thead class="inquiry-head">
 							<tr>
@@ -428,7 +529,7 @@ function searchView(data) {
 							</tr>
 						</tbody>
 						
-						문의 클릭 시 문의 내용 보임
+						<!-- 문의 클릭 시 문의 내용 보임 -->
 						<!-- <tbody class="inquiry-body">
 							<tr class="inquiry-title" style='cursor:pointer;'>
 								<td>1</td> <td>객실문의</td>
@@ -470,7 +571,7 @@ function searchView(data) {
 						</tbody> -->
 					</table>
 					
-					문의 페이징
+					<!-- 문의 페이징 -->
 					<nav class="paging inquiry-paging" aria-label="Page navigation example">
 						<ul class="inquiry-page pagination justify-content-center">
 							<li class='page-item cur-page' aria-current="page"><a class='page-link'>1</a></li>
@@ -478,72 +579,12 @@ function searchView(data) {
 							<li class='page-item'><a class='page-link'>3</a></li>
 						</ul>
 					</nav>
-				</div> --%>
+				</div>
 				
 				<%-- 문의 내역 - End --%>
 				
 				<%-- 예약 내역 --%>
-				<div class="reserve">
-					<!-- <table class="table table-striped">
-						<thead class="reserve-head">
-							<tr>
-								<th>객실번호</th> <th>객실명</th> <th>사용일</th>
-								<th>사용여부</th> <th></th>
-							</tr>
-						</thead>
-						<tbody class="reserve-body">
-							<tr class="reserve-title" style='cursor:pointer;'>
-								<td>6061</td> <td>대형 1호</td>
-								<td>22/06/01</td> <td>사용완료</td>
-								<td><input class="btn-detail del-reserve" type="button" value="삭제"></td>
-							</tr>
-						</tbody>
-					</table> -->
-					
-					<!-- 예약 페이징 -->
-					<nav class="paging reserve-paging" aria-label="Page navigation example">
-						<ul class="reserve-page pagination justify-content-center">
-							<li class='page-item cur-page' aria-current="page"><a class='page-link'>1</a></li>
-							<li class='page-item'><a class='page-link'>2</a></li>
-							<li class='page-item'><a class='page-link'>3</a></li>
-						</ul>
-					</nav>
-				
-					<%-- 예약 클릭 시 문의 내용 보임--%>
-					<!-- <table class="table table-striped">
-						<thead class="reserve-head">
-							<tr>
-								<th colspan="2">예약 정보</th>  <th colspan="2">결제 정보</th>
-							</tr>
-						</thead>
-						<tbody class="reserve-cont">
-							<tr>
-								<th>객실 번호</th> <td>7071</td>
-								<th>결제일</th> <td>2022-06-30 18:32:07</td>
-							</tr>
-							<tr>
-								<th>객실 이름</th> <td>대형 1호</td>
-								<th>결제 가격</th> <td>300,000원</td>
-							</tr>
-							<tr>
-								<th>인원 수</th> <td>5명</td>
-								<th>사용 여부</th> <td>사용예정</td>
-							</tr>
-							<tr>
-								<th colspan="4">요청사항:</th>
-							</tr>
-							<tr>
-								<td colspan="4">
-									<div>
-										<pre class="reserve-request">픽업 와주세요</pre>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div> -->
-			</div>
-			<%-- 예약 내역 - End --%>
+				<div class="reserve"></div>
 		</div>
 </body>
 </html>

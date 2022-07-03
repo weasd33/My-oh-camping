@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.pro.shim.model.CampPageDTO;
 import com.pro.shim.model.member.CampMemberDAO;
 import com.pro.shim.model.member.CampMemberDTO;
-import com.pro.shim.model.member.CampReservePageDTO;
+import com.pro.shim.model.member.CampReserveInquiryPageDTO;
 import com.pro.shim.model.reserve.CampReserveDTO;
 
 @Controller
@@ -127,7 +127,7 @@ public class MemberController {
 	@ResponseBody
 	public Map<String, Object> reserve(@RequestParam(value = "page", defaultValue = "1") int nowPage,
 									@RequestParam("mem_id") String id) {
-		CampReservePageDTO dto = new CampReservePageDTO(nowPage, 5, this.dao.getReserveCount(id));
+		CampReserveInquiryPageDTO dto = new CampReserveInquiryPageDTO(nowPage, 5, this.dao.getReserveCount(id));
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("startNo", dto.getStartNo());
@@ -138,6 +138,8 @@ public class MemberController {
 		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("list", list);
+		data.put("room_no", list.get(0).getRoom_no());
+		data.put("mem_id", id);
 		data.put("page", dto.getPage());
 		data.put("block", dto.getBlock());
 		data.put("startBlock", dto.getStartBlock());
@@ -145,6 +147,21 @@ public class MemberController {
 		data.put("allPage", dto.getAllPage());
 		
 		return data;
+	}
+	
+	// 예약 상세 정보
+	@RequestMapping("member_reserveCont")
+	@ResponseBody
+	public Map<String, Object> reserveCont(@RequestParam("page") int nowPage, @RequestParam("room_no") int room_no,
+									@RequestParam("mem_id") String id) {
+		
+		CampReserveDTO list = this.dao.getReserveCont(room_no);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("list", list);
+		map.put("page", nowPage);
+		map.put("mem_id", id);
+		
+		return map;
 	}
 	
 	// 회원 탈퇴

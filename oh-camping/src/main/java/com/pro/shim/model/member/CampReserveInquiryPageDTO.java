@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class CampReservePageDTO {
+public class CampReserveInquiryPageDTO {
 	
 	private int page;			// 현재 페이지
 	private int rowsize; 		// 한 페이지당 보여질 게시물의 수
@@ -19,7 +19,7 @@ public class CampReservePageDTO {
 	private int allPage;		// 전체 페이지 수
 	private int block = 3; 		// 아래에 보여질 페이지 최대 수
 	
-	public CampReservePageDTO(int page, int rowsize, int totalRecord) {
+	public CampReserveInquiryPageDTO(int page, int rowsize, int totalRecord) {
 		this.page = page;
 		this.rowsize = rowsize;
 		this.totalRecord = totalRecord;

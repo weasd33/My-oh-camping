@@ -37,5 +37,8 @@ public interface CampMemberDAO {
 
 	// 해당 회원 예약 수
 	public int getReserveCount(String id);
+
+	// 예약 상세 내역
+	public CampReserveDTO getReserveCont(int room_no);
 	
 }

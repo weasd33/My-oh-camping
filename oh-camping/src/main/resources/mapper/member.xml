@@ -136,6 +136,11 @@
 		(SELECT ROWNUM NUM, R.* FROM RESERVE_ROOM R WHERE MEM_ID = #{id}) 
 		WHERE NUM BETWEEN #{startNo} AND #{endNo}
 	</select>
+	
+	<!-- 예약 상세 내역 -->
+	<select id="reserveCont" parameterType="int" resultType="reserveDto">
+		SELECT * FROM RESERVE_ROOM WHERE ROOM_NO = #{room_no}
+	</select>
 </mapper>
   
   

@@ -14,7 +14,16 @@
 .icon-search-1:before { content: '\e80c'; } /* '' */
 .icon-search-2:before { content: '\e80d'; } /* '' */
 .icon-search-3:before { content: '\e80e'; } /* '' */
+.icon-lock:before { content: '\e80f'; } /* '' */
+.icon-lock-open:before { content: '\e810'; } /* '' */
+.icon-cancel:before { content: '\e811'; } /* '' */
+.icon-cancel-1:before { content: '\e812'; } /* '' */
+.icon-reply:before { content: '\e813'; } /* '' */
+.icon-cancel-2:before { content: '\e814'; } /* '' */
+.icon-reply-2:before { content: '\e815'; } /* '' */
+.icon-logout:before { content: '\e816'; } /* '' */
 .icon-warehouse:before { content: '\e840'; } /* '' */
+.icon-reply-1:before { content: '\f02a'; } /* '' */
 .icon-users-1:before { content: '\f064'; } /* '' */
 .icon-dollar:before { content: '\f155'; } /* '' */
 .icon-won:before { content: '\f159'; } /* '' */

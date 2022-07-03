@@ -67,4 +67,9 @@ public class CampMemberDAOImpl implements CampMemberDAO {
 		return this.sqlSession.selectOne("reserveCnt", id);
 	}
 
+	@Override
+	public CampReserveDTO getReserveCont(int room_no) { // 예약 상세 내역
+		return this.sqlSession.selectOne("reserveCont", room_no);
+	}
+
 }
