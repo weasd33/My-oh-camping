@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>회원 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/member/main.css" />?23" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/member/main.css" />?25" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
 <%-- <script src="<%=request.getContextPath() %>/resources/SHIM/js/member.js?6"></script> --%>
 <script type="text/javascript">
@@ -120,7 +120,7 @@ function detailShow(data) {
 		res += "<tr><td colspan='2' class='card-btn'>";
 		res += "<input class='btn-detail btn-inquiry' type='button' value='문의내역' onclick='inquiryList(1, \""+data.mem_id+"\");'/>";
 		res += "<input class='btn-detail btn-reserve' type='button' value='예약내역' onclick='reserveList(1, \""+data.mem_id+"\");'/>";		
-		res += "<input class='btn-detail btn-modify' type='button' value='정보수정'/>";
+		res += "<input class='btn-detail btn-modify' type='button' value='정보수정' onclick='modifyMember(\""+data.member_no+"\")'/>";
 		res += "<input class='btn-detail btn-delete' type='button' value='탈퇴'/>";
 		res += "</td></tr></table>";
 		
@@ -141,7 +141,6 @@ function detailShow(data) {
 		});
 		
 		$(".card-body").html(res);
-		$(".reserve").empty(); /* 예약 목록 지움 */
 	}
 };
 
@@ -174,6 +173,8 @@ function AddComma(num) {
 
 /* 해당 회원 예약 내역 */
 function reserveList(page, mem_id) { 
+	pwdCheck = 0;
+	pwd2Check = 0;
 	$.ajax({
 		url: '/test/member_reserveList.do',
 		data: { 
@@ -238,6 +239,7 @@ function getReserveList(data) {
 	
 	$(".inquiry").empty();
 	$(".reserve").empty();
+	$('.modify').empty();
 	$(".reserve").html(res);
 };
 
@@ -284,6 +286,7 @@ function getReserveCont(data) {
 		
 		$(".inquiry").empty();
 		$(".reserve").empty();
+		$('.modify').empty();
 		$(".reserve").html(res);
 	}
 };
@@ -292,6 +295,8 @@ function getReserveCont(data) {
 
 /* 해당 회원 문의 내역 */
 function inquiryList(page, mem_id) {
+	pwdCheck = 0;
+	pwd2Check = 0;
 	$.ajax({
 		url: '/test/member_inquiryList.do',
 		data: { 
@@ -353,8 +358,9 @@ function getInquiryList(data) {
 		res += "</ul></nav>"; 
 	}
 	
-	$(".reserve").empty();
 	$(".inquiry").empty();
+	$(".reserve").empty();
+	$('.modify').empty();
 	$(".inquiry").html(res);
 }
 
@@ -389,11 +395,13 @@ function getInquiryCont(data) {
 		res += "<td>"+list.qa_title+"</td> <td>"+DateFormat(list.qa_date)+"</td>";
 		res += "<td><input class='btn-detail del-cont-inquiry' type='button' value='삭제' onclick='inquiryDel("+ page +", \"" + list.qa_no + "\", \"" + id + "\")'></td></tr>";
 		res += "<tr><td colspan='5'><div>";
-		res += "<pre class='inquiry-cont'>문의내역</pre></div>";
+		res += "<pre class='inquiry-cont'>"+list.qa_cont+"</pre></div>";
 		res += "<span class='icon-logout inquiry-back-btn' onclick='inquiryList("+page+", \""+id+"\");'></span>";
 		res += "</td></tr></tbody>";
 		
 		$(".inquiry").empty();
+		$(".reserve").empty();
+		$('.modify').empty();
 		$(".inquiry").html(res);
 	}
 };
@@ -420,8 +428,9 @@ function inquiryDel(page, qa_no, id) {
 /* 해당 회원 문의 내역 - End */
 
 function viewHidden() { /* 취소 클릭 시 숨기기 */
-	$(".reserve").empty();
 	$(".inquiry").empty();
+	$(".reserve").empty();
+	$('.modify').empty();
 	$(".card-body").empty();
 	$('.detail-modal').css('visibility', 'hidden');
 	
@@ -439,10 +448,6 @@ function viewHidden() { /* 취소 클릭 시 숨기기 */
 	});
 };
 /* 회원 상세 정보 - End*/
-
-/* 회원 수정 */
-
-/* 회원 수정 - End */
 
 /* 검색 부분 */
 function search() {
@@ -526,6 +531,220 @@ function searchView(data) {
 };
 /* 검색 부분 - End*/
 
+/* 회원 수정 */
+
+// 유효성 체크 전역 변수
+var idCheck = 1;
+var pwdCheck = 0;
+var pwd2Check = 0;
+var email1Check = 1;
+var email2Check = 1;
+var phone1Check = 1;
+var phone2Check = 1;
+var phone3Check = 1;
+
+// 아이디 유효성 검사
+$(document).on("propertychange change keyup paste", '#id', function() {
+	var idExp = /^[a-z0-9]{4,12}$/g;
+	if(!idExp.test($('#id').val())) { 
+		$('.id_success').empty();
+		$('.id_fail').html('4~12자의 영문 소문자, 숫자만 사용 가능합니다.');
+		idCheck = 0;
+		modifyConfirm();
+	} else {
+		$('.id_fail').empty();
+		$('.id_success').html('사용 가능한 아이디입니다.');
+		idCheck = 1;
+		modifyConfirm();
+	}
+	/* 이미 사용중인 아이디입니다. */ // 2022-07-05 할 일 사용중인 아이디 체크, 회원 정보 수정, 탈퇴
+});
+ 
+// 비밀번호 유효성 검사
+$(document).on("propertychange change keyup paste", '#pwd', function() {
+	var pwdExp = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{8,16}$/;
+	if(!pwdExp.test($('#pwd').val())) {
+		$('.pwd_success').empty();
+		$('.pwd_fail').html('8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.');
+		pwdCheck = 0;
+		modifyConfirm();
+	} else {
+		$('.pwd_fail').empty();
+		$('.pwd_success').html('사용 가능한 비밀번호입니다.');
+		pwdCheck = 1;
+		modifyConfirm();
+	}
+});
+
+// 비밀번호 재확인 유효성 검사
+$(document).on("propertychange change keyup paste", '#pwd2', function() {
+	if(($('#pwd').val() != $('#pwd2').val()) ) {
+		$('.pwd2_confirm').empty();
+		$('.pwd2_confirm').html('<span class="icon-lock-open error_confirm"></span>');
+		pwd2Check = 0;
+		modifyConfirm();
+	} else if (($('#pwd').val() == $('#pwd2').val()) && pwdCheck == 1){
+		$('.pwd2_confirm').empty();
+		$('.pwd2_confirm').html('<span class="icon-lock success_confirm"></span>');
+		pwd2Check = 1;
+		modifyConfirm();
+	}
+});
+
+// 이메일 앞자리 유효성 검사
+$(document).on("propertychange change keyup paste", '#email', function() {
+	var emailExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*$/;
+	if(!emailExp.test($('#email').val())) {
+		$('.email_success').empty();
+		$('.email_fail').html('올바른 이메일 형식이 아닙니다.');
+		email1Check = 0;
+		modifyConfirm();
+	} else {
+		$('.email_fail').empty();
+		$('.email_success').html('사용 가능한 이메일입니다.');
+		email1Check = 1;
+		modifyConfirm();
+	}
+});
+
+// 이메일 뒷자리 유효성 검사
+$(document).on("propertychange change keyup paste", '#email2', function() {
+	var email2Exp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+	if(!email2Exp.test($('#email2').val())) {
+		$('.email_success').empty();
+		$('.email_fail').html('올바른 이메일 형식이 아닙니다.');
+		email2Check = 0;
+		modifyConfirm();
+	} else {
+		$('.email_fail').empty();
+		$('.email_success').html('사용 가능한 이메일입니다.');
+		email2Check = 1;
+		modifyConfirm();
+	}
+});
+
+// 전화번호 앞자리 유효성 검사
+$(document).on("propertychange change keyup paste", '#phone', function() {
+	var phoneExp = /^01([0|1|6|7|8|9])$/;
+	if(!phoneExp.test($('#phone').val())) {
+		$('.phone-success').empty();
+		$('.phone-fail').html('전화번호 형식에 맞게 작성해 주세요.');
+		phone1Check = 0;
+		modifyConfirm();
+	} else {
+		$('.phone-fail').empty();
+		$('.phone-success').html('사용 가능한 전화번호입니다.');
+		phone1Check = 1;
+		modifyConfirm();
+	}
+});
+
+// 전화번호 중간자리 유효성 검사
+$(document).on("propertychange change keyup paste", '#phone2', function() {
+	var phone2Exp = /^([0-9]{3,4})$/;
+	if(!phone2Exp.test($('#phone2').val())) {
+		$('.phone-success').empty();
+		$('.phone-fail').html('전화번호 형식에 맞게 작성해 주세요.');
+		phone2Check = 0;
+		modifyConfirm();
+	} else {
+		$('.phone-fail').empty();
+		$('.phone-success').html('사용 가능한 전화번호입니다.');
+		phone2Check = 1;
+		modifyConfirm();
+	}
+});
+
+//전화번호 끝자리 유효성 검사
+$(document).on("propertychange change keyup paste", '#phone3', function() {
+	var phone3Exp = /^([0-9]{4})$/;
+	if(!phone3Exp.test($('#phone3').val())) {
+		$('.phone-success').empty();
+		$('.phone-fail').html('전화번호 형식에 맞게 작성해 주세요.');
+		phone3Check = 0;
+		modifyConfirm();
+	} else {
+		$('.phone-fail').empty();
+		$('.phone-success').html('사용 가능한 전화번호입니다.');
+		phone3Check = 1;
+		modifyConfirm();
+	}
+});
+
+function modifyConfirm() {
+	if((idCheck && pwdCheck && pwd2Check && email1Check && email2Check && phone1Check && phone2Check && phone3Check) == 1) {
+		$('.modify-confirm-btn').empty();
+		$('.modify-confirm-btn').html("<input class='btn-detail modify-btn' type='button' value='확인'/>");
+	} else {
+		$('.modify-confirm-btn').empty();
+		$('.modify-confirm-btn').html("<input class='btn-detail modify-btn-error' type='button' value='확인'/>");
+	};
+}
+
+function modifyMember(num) {
+	pwdCheck = 0;
+	pwd2Check = 0;
+	$.ajax({
+		url: '/test/member_detail.do',
+		data: { 'num': num },
+		type: 'get',
+		dataType: 'json',
+		success: getModifyMember,
+		error: function() {alert("Detail Error..");}
+	});
+}
+
+function getModifyMember(data) {
+	var res = "";
+	
+	if(data.member_no == 0) {
+		alert('getModifyMember Error..')
+	} else {
+		res += "<div class='modify-row'>";	
+		res += "<h3 class='modify-title'><label for='id'>아이디</label></h3>";
+		res += "<span><input type='text' id='id' name='id' value="+data.mem_id+" maxlength='12' required/></span>";
+		res += "<span class='id_success success_confirm'></span>";
+		res += "<span class='id_fail error_confirm'></span></div>";
+		res += "<div class='modify-row'>";
+		res += "<h3 class='modify-title'><label for='pwd'>비밀번호</label></h3>";
+		res += "<span><input type='password' id='pwd' name='pwd' maxlength='16' required/>";
+		res += "<span class='pwd_success success_confirm'></span>";
+		res += "<span class='pwd_fail error_confirm'></span>";
+		res += "</span><h3 class='modify-title'><label for='pwd2'>비밀번호 재확인</label></h3>";
+		res += "<span><input type='password' id='pwd2' name='pwd2' maxlength='16' required/>";
+		res += "<span class='pwd2_confirm'></span></span></div>";
+		res += "<div class='modify-row'>";
+		res += "<h3 class='modify-title'><label for='name'>성 명</label></h3>";
+		res += "<span><input type='text' id='name' name='name' value="+data.mem_name+" required/></span></div>";
+		res += "<div class='modify-row'><h3 class='modify-title'><label for='email'>이메일</label></h3>";
+		res += "<span><input type='text' id='email' name='email1' value="+data.mem_email.split('@')[0]+" required/>";
+		res += "<span class='email-divider'>@</span>";
+		res += "<input type='text' id='email2' name='email2' value="+data.mem_email.split('@')[1]+" required/></span>";
+		res += "<span class='email_success success_confirm'></span>";
+		res += "<span class='email_fail error_confirm'></span></div>";
+		res += "<div class='modify-row'>";
+		res += "<h3 class='modify-title'><label for='phone'>전화번호</label></h3>";
+		res += "<span><input type='text' id='phone' name='phone1' value="+data.mem_phone.split('-')[0]+" maxlength='3' required/>";
+		res += "<span class='phone-divider'>-</span>";
+		res += "<input type='text' id='phone2' name='phone2' value="+data.mem_phone.split('-')[1]+" maxlength='4' required/>";
+		res += "<span class='phone-divider'>-</span>";
+		res += "<input type='text' id='phone3' name='phone3' value="+data.mem_phone.split('-')[2]+" maxlength='4' required/></span>";
+		res += "<div class='phone-success success_confirm'></div>";
+		res += "<div class='phone-fail error_confirm'></div>";
+		res += "</div><div class='modify-confirm-btn'>";
+		res += "<input class='btn-detail modify-btn-error' type='button' value='확인'/>";
+		res += "</div>";
+		
+		$(".inquiry").empty();
+		$(".reserve").empty();
+		$('.modify').empty();
+		$(".modify").html(res);
+	}
+}
+
+
+/* 회원 수정 - End */
+
 </script>
 </head>
 <body>
@@ -575,30 +794,33 @@ function searchView(data) {
 					<tr class="thead">
 						<th>No.</th> <th>아이디</th> <th>성 명</th> <th>이메일</th>
 					</tr>
-					<tbody class="detail-user">
-					<%-- Ajax 회원 조회 --%>
-					</tbody>
+					
+					<%-- 회원 조회 --%>
+					<tbody class="detail-user"></tbody>
 				</table>
-		<%-- ----------------------- 페이징 부분 ----------------------- --%>		
 				<nav class="paging" aria-label="Page navigation example">
-					<ul class="list-page pagination justify-content-center">
-					<%-- Ajax 페이징 --%>
-					</ul>
+				
+					<%-- 회원 페이징 --%>
+					<ul class="list-page pagination justify-content-center"></ul>
 				</nav>	
 			</section>
 		</main>
 	</div>	
 		<%-- ----------------------- 회원 상세 부분 ----------------------- --%>		
 		<div class="card detail-modal">
-			<div class="card-body">
-			<%-- Ajax 회원 상세 --%>
-			</div>
+		
+			<%-- 회원 정보 --%>
+			<div class="card-body"></div>
 			
-				<%-- 문의 내역 --%>
-				<div class="inquiry"></div>
+			<%-- 문의 내역 --%>
+			<div class="inquiry"></div>
+			
+			<%-- 예약 내역 --%>
+			<div class="reserve"></div>
+			
+			<%-- 회원 수정 --%>
+			<div class="modify"></div>		
 				
-				<%-- 예약 내역 --%>
-				<div class="reserve"></div>
 		</div>
 </body>
 </html>

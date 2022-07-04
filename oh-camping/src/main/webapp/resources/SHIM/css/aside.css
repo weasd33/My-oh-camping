@@ -2,7 +2,7 @@
 @import url("reset.css?5");
 
 #aside {
-	background: #6c6c6c;
+	background: #6464ff;
 	width: 220px;
 	height: 100%;
 	color: #ffffff;	
@@ -11,16 +11,33 @@
 }
 	
 	#aside > .navi {
-		padding-top: 15%;
-		padding-left: 25%;
+		padding-top: 5%;
+		padding-left: 8%;
+		padding-right: 8%;
 	}
 	
 	#aside > .navi a {
-		color: #ffffff;	
+		color: #f3f3f3;
 	}
 	
 	#aside > .navi li {
 		margin-top: 20px;
 		
 	}
+
+.sidebar-divider {
+	color: #e5e5e5;
+	opacity: 0.3;
+}
+
+.sidebar-heading {
+	color: #e5e5e5;
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.nav-item {
+	margin-bottom: 30px;
+	font-size: 16px;
+}
 

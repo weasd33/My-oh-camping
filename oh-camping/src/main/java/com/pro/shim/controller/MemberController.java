@@ -119,7 +119,6 @@ public class MemberController {
 	@RequestMapping("member_detail.do")
 	@ResponseBody
 	public CampMemberDTO detail(@RequestParam("num") int num) {
-		System.out.println(num);
 		return this.dao.getMemberDetail(num);
 	}
 	
