@@ -96,4 +96,14 @@ public class CampMemberDAOImpl implements CampMemberDAO {
 	public void updateInquirySeq(int no) { // 해당 문의 삭제 후 시퀀스 갱신
 		this.sqlSession.update("inquirySeq", no);
 	}
+
+	@Override
+	public List<CampMemberDTO> getMemberAllId(int no) { // 아이디 중복 체크를 위한 전체 ID 조회
+		return this.sqlSession.selectList("allMemId", no);
+	}
+
+	@Override
+	public void modifyMember(Map<String, Object> map) { // 회원 정보 수정
+		this.sqlSession.update("modifyMember", map);
+	}
 }

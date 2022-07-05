@@ -6,10 +6,10 @@
 <meta charset="UTF-8">
 <title>회원 관리</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link href="<c:url value="/resources/SHIM/css/member/main.css" />?25" rel="stylesheet">
+<link href="<c:url value="/resources/SHIM/css/member/main.css" />?26" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
-<%-- <script src="<%=request.getContextPath() %>/resources/SHIM/js/member.js?6"></script> --%>
-<script type="text/javascript">
+<script src="<%=request.getContextPath() %>/resources/SHIM/js/member.js?8"></script>
+<!-- <script type="text/javascript">
 
 $(document).ready(function() {
 	getList(1, "null");
@@ -26,6 +26,8 @@ $(function() {
 		getList(1, sortKey);				
 	});
 });
+
+
 
 /* 회원 전체 조회 */
 function getList(page, sortKey) {
@@ -110,18 +112,18 @@ function detailShow(data) {
 	if(data == null) {
 		alert('회원 정보가 존재하지 않습니다.');
 	} else {
-		res += "<div class='card-top'><h4 class='card-title'><span class='card-name'>" + data.mem_id + "</span><span class='title'>님 정보</span></h4>";
+		res += "<div class='card-top'><h4 class='card-title'><span class='card-name'>" + data.list.mem_id + "</span><span class='title'>님 정보</span></h4>";
 		res += "<span class='icon-cancel btn-cancel' onclick='viewHidden();'></span></div><hr class='card-line'>";
 		res += "<table class='detail-table'>";
-		res += "<tr><td><span class='icon-user-1 icon'>" + data.mem_name + "</span></td>";
-		res += "<td><span class='icon-mail icon'>" + data.mem_email + "</span></td></tr>";		
+		res += "<tr><td><span class='icon-user-1 icon'>" + data.list.mem_name + "</span></td>";
+		res += "<td><span class='icon-mail icon'>" + data.list.mem_email + "</span></td></tr>";		
 		res += "<tr><td><span class='icon-lock'>＊＊＊＊</span></td>";
-		res += "<td><span class='icon-phone icon'>" + data.mem_phone + "</span></td></tr>";
+		res += "<td><span class='icon-phone icon'>" + data.list.mem_phone + "</span></td></tr>";
 		res += "<tr><td colspan='2' class='card-btn'>";
-		res += "<input class='btn-detail btn-inquiry' type='button' value='문의내역' onclick='inquiryList(1, \""+data.mem_id+"\");'/>";
-		res += "<input class='btn-detail btn-reserve' type='button' value='예약내역' onclick='reserveList(1, \""+data.mem_id+"\");'/>";		
-		res += "<input class='btn-detail btn-modify' type='button' value='정보수정' onclick='modifyMember(\""+data.member_no+"\")'/>";
-		res += "<input class='btn-detail btn-delete' type='button' value='탈퇴'/>";
+		res += "<input class='btn-detail btn-inquiry' type='button' value='문의내역' onclick='inquiryList(1, \""+data.list.mem_id+"\");'/>";
+		res += "<input class='btn-detail btn-reserve' type='button' value='예약내역' onclick='reserveList(1, \""+data.list.mem_id+"\");'/>";		
+		res += "<input class='btn-detail btn-modify' type='button' value='정보수정' onclick='modifyMember(\""+data.list.member_no+"\")'/>";
+		res += "<input class='btn-detail btn-delete' type='button' value='탈퇴' onclick='delMember(\""+data.list.member_no+"\")' />";
 		res += "</td></tr></table>";
 		
 		$(".card-body").html(res);
@@ -533,19 +535,38 @@ function searchView(data) {
 
 /* 회원 수정 */
 
+// 아이디 중복 체크 전역 변수
+var allMemId = []; 
+
 // 유효성 체크 전역 변수
 var idCheck = 1;
-var pwdCheck = 0;
-var pwd2Check = 0;
+var memPwdCheck = 1;
+var memPwd2Check = 1;
+var nameCheck = 1;
 var email1Check = 1;
 var email2Check = 1;
 var phone1Check = 1;
 var phone2Check = 1;
 var phone3Check = 1;
+var adminPwdCheck = 0;
+
+// 회원 번호 전역 변수
+var modifyMemNum = 0;
 
 // 아이디 유효성 검사
 $(document).on("propertychange change keyup paste", '#id', function() {
 	var idExp = /^[a-z0-9]{4,12}$/g;
+
+	for(let i = 0; i < allMemId.length; i++) {
+		if(allMemId[i] == $('#id').val()) {
+			$('.id_success').empty();
+			$('.id_fail').html('이미 사용중인 아이디입니다.');
+			idCheck = 0;
+			modifyConfirm();
+			return;
+		}
+	}
+	
 	if(!idExp.test($('#id').val())) { 
 		$('.id_success').empty();
 		$('.id_fail').html('4~12자의 영문 소문자, 숫자만 사용 가능합니다.');
@@ -556,8 +577,8 @@ $(document).on("propertychange change keyup paste", '#id', function() {
 		$('.id_success').html('사용 가능한 아이디입니다.');
 		idCheck = 1;
 		modifyConfirm();
-	}
-	/* 이미 사용중인 아이디입니다. */ // 2022-07-05 할 일 사용중인 아이디 체크, 회원 정보 수정, 탈퇴
+	} 
+	
 });
  
 // 비밀번호 유효성 검사
@@ -566,12 +587,13 @@ $(document).on("propertychange change keyup paste", '#pwd', function() {
 	if(!pwdExp.test($('#pwd').val())) {
 		$('.pwd_success').empty();
 		$('.pwd_fail').html('8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.');
-		pwdCheck = 0;
+		memPwdCheck = 0;
+		memPwd2Check = 0;
 		modifyConfirm();
 	} else {
 		$('.pwd_fail').empty();
 		$('.pwd_success').html('사용 가능한 비밀번호입니다.');
-		pwdCheck = 1;
+		memPwdCheck = 1;
 		modifyConfirm();
 	}
 });
@@ -581,12 +603,28 @@ $(document).on("propertychange change keyup paste", '#pwd2', function() {
 	if(($('#pwd').val() != $('#pwd2').val()) ) {
 		$('.pwd2_confirm').empty();
 		$('.pwd2_confirm').html('<span class="icon-lock-open error_confirm"></span>');
-		pwd2Check = 0;
+		memPwd2Check = 0;
 		modifyConfirm();
-	} else if (($('#pwd').val() == $('#pwd2').val()) && pwdCheck == 1){
+	} else if (($('#pwd').val() == $('#pwd2').val()) && memPwdCheck == 1){
 		$('.pwd2_confirm').empty();
 		$('.pwd2_confirm').html('<span class="icon-lock success_confirm"></span>');
-		pwd2Check = 1;
+		memPwd2Check = 1;
+		modifyConfirm();
+	}
+});
+
+// 성 명 유효성 검사
+$(document).on("propertychange change keyup paste", '#name', function() {
+	var nameExp = /^[가-힣]{2,8}$/;
+	if(!nameExp.test($('#name').val())) {
+		$('.name_success').empty();
+		$('.name_fail').html('2글자 이상 8글자 이하의 한글만 사용해 주세요.');
+		nameCheck = 0;
+		modifyConfirm();
+	} else {
+		$('.name_fail').empty();
+		$('.name_success').html('멋진 이름이네요!!');
+		nameCheck = 1;
 		modifyConfirm();
 	}
 });
@@ -671,10 +709,27 @@ $(document).on("propertychange change keyup paste", '#phone3', function() {
 	}
 });
 
+//관리자 비밀번호
+$(document).on("propertychange change keyup paste", '#adminPwd', function() {
+	if($('#adminPwd').val() == 1234) { // 관리자 임시 비밀번호
+		$('.adminPwd_fail').empty();
+		$('.adminPwd_success').html('수정하려면 확인 버튼을 눌러주세요.');
+		adminPwdCheck = 1;
+		modifyConfirm();
+	} else {
+		$('.adminPwd_success').empty();
+		$('.adminPwd_fail').html('관리자 비밀번호가 일치하지 않습니다.');
+		adminPwdCheck = 0;
+		modifyConfirm();
+	}
+});
+
+// 수정 확인 버튼 활성화 or 비활성화
 function modifyConfirm() {
-	if((idCheck && pwdCheck && pwd2Check && email1Check && email2Check && phone1Check && phone2Check && phone3Check) == 1) {
+	if((idCheck && memPwdCheck && memPwd2Check && nameCheck && email1Check && email2Check
+			&& phone1Check && phone2Check && phone3Check && adminPwdCheck) == 1) {
 		$('.modify-confirm-btn').empty();
-		$('.modify-confirm-btn').html("<input class='btn-detail modify-btn' type='button' value='확인'/>");
+		$('.modify-confirm-btn').html("<input class='btn-detail modify-btn' type='button' value='확인' onclick='modifyOk("+modifyMemNum+");'/>");
 	} else {
 		$('.modify-confirm-btn').empty();
 		$('.modify-confirm-btn').html("<input class='btn-detail modify-btn-error' type='button' value='확인'/>");
@@ -695,6 +750,14 @@ function modifyMember(num) {
 }
 
 function getModifyMember(data) {
+	// 해당 회원 아이디를 제외한 모든 아이디를 담는다.
+	memIdList = data.allMemId;
+	$.each(memIdList, function(index, vo) {
+		allMemId[index] = vo["mem_id"];
+	});
+	
+	modifyMemNum = data.list.member_no; // 수정 후 정보를 조회하기 위한 변수
+	
 	var res = "";
 	
 	if(data.member_no == 0) {
@@ -702,36 +765,42 @@ function getModifyMember(data) {
 	} else {
 		res += "<div class='modify-row'>";	
 		res += "<h3 class='modify-title'><label for='id'>아이디</label></h3>";
-		res += "<span><input type='text' id='id' name='id' value="+data.mem_id+" maxlength='12' required/></span>";
+		res += "<span><input type='text' id='id' name='id' value="+data.list.mem_id+" maxlength='12' required/></span>";
 		res += "<span class='id_success success_confirm'></span>";
 		res += "<span class='id_fail error_confirm'></span></div>";
 		res += "<div class='modify-row'>";
 		res += "<h3 class='modify-title'><label for='pwd'>비밀번호</label></h3>";
-		res += "<span><input type='password' id='pwd' name='pwd' maxlength='16' required/>";
+		res += "<span><input type='password' id='pwd' name='pwd' value="+data.list.mem_pwd+" maxlength='16' required/>";
 		res += "<span class='pwd_success success_confirm'></span>";
 		res += "<span class='pwd_fail error_confirm'></span>";
 		res += "</span><h3 class='modify-title'><label for='pwd2'>비밀번호 재확인</label></h3>";
-		res += "<span><input type='password' id='pwd2' name='pwd2' maxlength='16' required/>";
+		res += "<span><input type='password' id='pwd2' name='pwd2' value="+data.list.mem_pwd+" maxlength='16' required/>";
 		res += "<span class='pwd2_confirm'></span></span></div>";
 		res += "<div class='modify-row'>";
 		res += "<h3 class='modify-title'><label for='name'>성 명</label></h3>";
-		res += "<span><input type='text' id='name' name='name' value="+data.mem_name+" required/></span></div>";
+		res += "<span><input type='text' id='name' name='name' value="+data.list.mem_name+" maxlength='8' required/></span>";
+		res += "<span class='name_success success_confirm'></span>";
+		res += "<span class='name_fail error_confirm'></span></div>";
 		res += "<div class='modify-row'><h3 class='modify-title'><label for='email'>이메일</label></h3>";
-		res += "<span><input type='text' id='email' name='email1' value="+data.mem_email.split('@')[0]+" required/>";
+		res += "<span><input type='text' id='email' name='email1' value="+data.list.mem_email.split('@')[0]+" required/>";
 		res += "<span class='email-divider'>@</span>";
-		res += "<input type='text' id='email2' name='email2' value="+data.mem_email.split('@')[1]+" required/></span>";
+		res += "<input type='text' id='email2' name='email2' value="+data.list.mem_email.split('@')[1]+" required/></span>";
 		res += "<span class='email_success success_confirm'></span>";
 		res += "<span class='email_fail error_confirm'></span></div>";
 		res += "<div class='modify-row'>";
 		res += "<h3 class='modify-title'><label for='phone'>전화번호</label></h3>";
-		res += "<span><input type='text' id='phone' name='phone1' value="+data.mem_phone.split('-')[0]+" maxlength='3' required/>";
+		res += "<span><input type='text' id='phone' name='phone1' value="+data.list.mem_phone.split('-')[0]+" maxlength='3' required/>";
 		res += "<span class='phone-divider'>-</span>";
-		res += "<input type='text' id='phone2' name='phone2' value="+data.mem_phone.split('-')[1]+" maxlength='4' required/>";
+		res += "<input type='text' id='phone2' name='phone2' value="+data.list.mem_phone.split('-')[1]+" maxlength='4' required/>";
 		res += "<span class='phone-divider'>-</span>";
-		res += "<input type='text' id='phone3' name='phone3' value="+data.mem_phone.split('-')[2]+" maxlength='4' required/></span>";
+		res += "<input type='text' id='phone3' name='phone3' value="+data.list.mem_phone.split('-')[2]+" maxlength='4' required/></span>";
 		res += "<div class='phone-success success_confirm'></div>";
-		res += "<div class='phone-fail error_confirm'></div>";
-		res += "</div><div class='modify-confirm-btn'>";
+		res += "<div class='phone-fail error_confirm'></div></div>";
+		res += "<h3 class='modify-title'><label for='adminPwd'>관리자 비밀번호</label></h3>";
+		res += "<span><input type='password' id='adminPwd' name='adminPwd' value='' required/></span>";
+		res += "<span class='adminPwd_success success_confirm'></span>";
+		res += "<span class='adminPwd_fail error_confirm'></span></div>";
+		res += "<div class='modify-confirm-btn'>";
 		res += "<input class='btn-detail modify-btn-error' type='button' value='확인'/>";
 		res += "</div>";
 		
@@ -742,10 +811,45 @@ function getModifyMember(data) {
 	}
 }
 
+function modifyOk(num) {
+	var mem_id = $('#id').val();
+	var mem_pwd = $('#pwd').val();
+	var mem_name = $('#name').val();
+	var mem_email = $('#email').val() + "@" + $('#email2').val();
+	var mem_phone = $('#phone').val() + "-" + $('#phone2').val() + "-" + $('#phone3').val();
+
+	$.ajax({
+		url: '/test/member_modify.do',
+		data: {
+			'mem_num': num,
+			'mem_id': mem_id,
+			'mem_pwd': mem_pwd,
+			'mem_name': mem_name,
+			'mem_email': mem_email,
+			'mem_phone': mem_phone
+		},
+		type: 'post',
+		dataType: 'json',
+		success: function(data) { 
+				if(data != 0) {
+					alert('회원 정보를 수정하였습니다.');
+					$('.modify').empty();
+					detailView(data);
+				} else {
+					alert('회원 정보 수정 실패');
+				}
+			},
+		error: function() {alert("modifyOk Error..");}
+	});
+}
+
+function delMember(num) {
+	if(confirm('정말로 탈퇴시키겠습니까?')) { location.href='member_delete.do?num='+num; }
+}
 
 /* 회원 수정 - End */
 
-</script>
+</script> -->
 </head>
 <body>
 	<header class="header">

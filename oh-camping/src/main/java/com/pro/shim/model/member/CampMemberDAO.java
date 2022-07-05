@@ -55,5 +55,11 @@ public interface CampMemberDAO {
 
 	// 해당 문의 삭제 후 시퀀스 갱신
 	public void updateInquirySeq(int no);
+
+	// 아이디 중복 체크를 위한 전체 ID 조회
+	public List<CampMemberDTO> getMemberAllId(int no);
+
+	// 회원 정보 수정
+	public void modifyMember(Map<String, Object> map);
 	
 }

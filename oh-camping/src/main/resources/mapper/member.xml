@@ -170,6 +170,18 @@
 	<update id="inquirySeq">
 		UPDATE CAMP_QA SET QA_NO = QA_NO -1 WHERE QA_NO > #{no}
 	</update>
+	
+	<!-- 아이디 중복 체크를 위한 전체 ID 조회 -->
+	<select id="allMemId" parameterType="int" resultType="memberDto">
+		SELECT MEM_ID FROM CAMP_MEMBER WHERE MEMBER_NO != #{no}
+	</select>
+	
+	<!-- 회원 정보 수정 -->
+	<update id="modifyMember" parameterType="Map">
+		UPDATE CAMP_MEMBER SET 
+		MEM_ID = #{id}, MEM_PWD = #{pwd}, MEM_NAME = #{name}, MEM_PHONE = #{phone}, MEM_EMAIL = #{email} 
+		WHERE MEMBER_NO = #{num}
+	</update>
 </mapper>
   
   

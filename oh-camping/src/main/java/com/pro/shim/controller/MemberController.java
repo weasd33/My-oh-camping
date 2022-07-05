@@ -118,8 +118,14 @@ public class MemberController {
 	// 회원 정보
 	@RequestMapping("member_detail.do")
 	@ResponseBody
-	public CampMemberDTO detail(@RequestParam("num") int num) {
-		return this.dao.getMemberDetail(num);
+	public Map<String, Object> detail(@RequestParam("num") int num) {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("list", this.dao.getMemberDetail(num)); // 해당 회원 정보
+		map.put("allMemId", this.dao.getMemberAllId(num)); // 아이디 중복 체크를 위함
+		
+		return map;
 	}
 	
 	// 해당 회원 예약 내역
@@ -207,6 +213,26 @@ public class MemberController {
 		return map;
 	}
 	
+	// 해당 회원 정보 수정
+	@RequestMapping("member_modify.do")
+	@ResponseBody
+	public int modify(@RequestParam("mem_id") String id, @RequestParam("mem_pwd") String pwd,
+			@RequestParam("mem_name") String name, @RequestParam("mem_email") String email,
+			@RequestParam("mem_phone") String phone, @RequestParam("mem_num") int num) {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id", id);
+		map.put("pwd", pwd);
+		map.put("name", name);
+		map.put("email", email);
+		map.put("phone", phone);
+		map.put("num", num);
+		
+		this.dao.modifyMember(map);
+		
+		return num;
+	}
+	
 	// 해당 문의 내역 삭제
 	@RequestMapping("inquiry_delete.do")
 	@ResponseBody
@@ -232,14 +258,6 @@ public class MemberController {
 		return "SHIM/member/memberList";
 	}
 	
-	/*
-	 * // 회원 수정
-	 * 
-	 * @RequestMapping("member_modify.do")
-	 * 
-	 * @ResponseBody public CampMemberDTO modify(@RequestParam("num") int num) {
-	 * return this.dao.getMemberDetail(num); }
-	 */
 }
 
 
