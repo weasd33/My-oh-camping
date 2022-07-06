@@ -141,11 +141,11 @@ function DateFormat(date) {
 /* 객실 상태 format */
 function roomStatus(date) {
 	var today = new Date();
-	var year = today.getFullYear().toString().slice(2); // 년도
+	var year = today.getFullYear().toString(); // 년도
 	var month = ('0' + (today.getMonth() + 1)).slice(-2); // 월
 	var day = ('0' + today.getDate()).slice(-2); // 일
 	
-	var now = year + '/' + month + '/' + day; // 현재 날짜
+	var now = year + '-' + month + '-' + day; // 현재 날짜
 	
 	var stat = "";
 	if(now <= date) {stat = "사용예정"}
@@ -197,7 +197,7 @@ function getReserveList(data) {
 		$.each(list, function(index, vo) {
 			res += "<tr>";
 			res += "<td>"+ vo["room_no"] +"</td> <td>"+ vo["room_name"] +"</td>";
-			res += "<td>"+ DateFormat(vo["room_resdate"]) +"</td> <td>"+roomStatus(vo["room_resdate"])+"</td>";
+			res += "<td>"+ DateFormat(vo["room_resdate"]).substr(0, 10) +"</td> <td>"+roomStatus(vo["room_resdate"].substr(0, 10))+"</td>";
 			res += "<td><input class='btn-detail cont-reserve' type='button' value='상세보기' onclick='reserveCont("+ page +", \"" + vo["room_no"] + "\", \"" + vo["mem_id"] + "\")'></td>";
 			res += "</tr>";
 		});
@@ -266,8 +266,8 @@ function getReserveCont(data) {
 		res += "<tr><th>객실 이름</th> <td>"+list.room_name+"</td>";
 		res += "<th>결제 가격</th> <td>"+AddComma(list.room_price)+"원</td></tr>";
 		res += "<tr><th>인원 수</th> <td>"+list.room_mpeople+"명</td>";
-		res += "<th>사용 여부</th> <td>"+roomStatus(list.room_resdate)+"</td></tr>";
-		res += "<tr><th colspan='2'>요청사항:</th><th>사용일</th><td>"+DateFormat(list.room_resdate)+"</td></tr>";
+		res += "<th>사용 여부</th> <td>"+roomStatus(list.room_resdate).substr(0, 10)+"</td></tr>";
+		res += "<tr><th colspan='2'>요청사항:</th><th>사용일</th><td>"+DateFormat(list.room_resdate).substr(0, 10)+"</td></tr>";
 		res += "<tr><td colspan='4'><div>";
 		res += "<pre class='reserve-request'>"+list.payment_request+"</pre></div>";
 		res += "<span class='icon-logout reserve-back-btn' onclick='reserveList("+page+", \""+mem_id+"\");'></span>";
@@ -318,7 +318,7 @@ function getInquiryList(data) {
 		var allPage = data.allPage;
 		$.each(list, function(index, vo) {
 			res += "<tr><td>"+vo["qa_no"]+"</td> <td>"+vo["qa_type"]+"</td>";
-			res += "<td>"+vo["qa_title"]+"</td> <td>"+DateFormat(vo["qa_date"])+"</td>";
+			res += "<td>"+vo["qa_title"]+"</td> <td>"+DateFormat(vo["qa_date"]).substr(0, 10)+"</td>";
 			res += "<td><input class='btn-detail del-cont-inquiry' type='button' value='상세보기' onclick='inquiryCont("+ page +", \"" + vo["qa_no"] + "\", \"" + qa_userid + "\")'>";
 			res += "<input class='btn-detail del-cont-inquiry' type='button' value='삭제' onclick='inquiryDel("+ page +", \"" + vo["qa_no"] + "\", \"" + qa_userid + "\")'></td></tr>";
 		});
@@ -381,7 +381,7 @@ function getInquiryCont(data) {
 		res += "<th>No.</th> <th>유 형</th> <th>제 목</th><th>작성일</th> <th colspan='2'></th>";
 		res += "</tr></thead><tbody class='inquiry-body'><tr>";
 		res += "<td>"+list.qa_no+"</td> <td>"+list.qa_type+"</td>";
-		res += "<td>"+list.qa_title+"</td> <td>"+DateFormat(list.qa_date)+"</td>";
+		res += "<td>"+list.qa_title+"</td> <td>"+DateFormat(list.qa_date).substr(0, 10)+"</td>";
 		res += "<td><input class='btn-detail del-cont-inquiry' type='button' value='삭제' onclick='inquiryDel("+ page +", \"" + list.qa_no + "\", \"" + id + "\")'></td></tr>";
 		res += "<tr><td colspan='5'><div>";
 		res += "<pre class='inquiry-cont'>"+list.qa_cont+"</pre></div>";

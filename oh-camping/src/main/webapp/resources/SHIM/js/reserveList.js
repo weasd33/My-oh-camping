@@ -81,12 +81,13 @@ function AddComma(num) {
 
 /* 객실 상태 format */
 function roomStatus(date, status) {
+	var date = date.substr(0, 10);
 	var today = new Date();
-	var year = today.getFullYear().toString().slice(2); // 년도
+	var year = today.getFullYear().toString(); // 년도
 	var month = ('0' + (today.getMonth() + 1)).slice(-2); // 월
 	var day = ('0' + today.getDate()).slice(-2); // 일
 	
-	var now = year + '/' + month + '/' + day; // 현재 날짜
+	var now = year + '-' + month + '-' + day; // 현재 날짜
 	
 	var stat = "";
 	if((now <= date) && (status == 0)) {
@@ -120,7 +121,7 @@ function listView(data) {
 	} else {
 		$.each(data, function(index, vo) {
 			list += "<tr onclick=getCont(" + vo["room_no"] + ");>";
-			list += "<td>" + vo["room_resdate"] + "</td>";
+			list += "<td>" + vo["room_resdate"].substr(0, 10) + "</td>";
 			list += "<td>" + vo["room_no"] + "</td>";
 			list += "<td>" + vo["room_name"] + "</td>";
 			list += "<td>" + vo["room_mpeople"] + "명</td>";
@@ -137,11 +138,11 @@ function listView(data) {
 /* 사용 여부 */
 function contStatus(date, status) {
 	var today = new Date();
-	var year = today.getFullYear().toString().slice(2); // 년도
+	var year = today.getFullYear().toString(); // 년도
 	var month = ('0' + (today.getMonth() + 1)).slice(-2); // 월
 	var day = ('0' + today.getDate()).slice(-2); // 일
 	
-	var now = year + '/' + month + '/' + day; // 현재 날짜
+	var now = year + '-' + month + '-' + day; // 현재 날짜
 	
 	var stat = "";
 	if(now <= date && status === 1) {
@@ -192,7 +193,7 @@ function contView(data) {
 		cont += "<tr class='content-thead'><th>결제일</th>";
 		cont += "<td>" + data.payment_orderdate + "</td></tr>";
 		cont += "<tr class='content-thead'><th>사용일</th>";
-		cont += "<td>" + room_resdate + "</td></tr>";
+		cont += "<td>" + room_resdate.substr(0, 10) + "</td></tr>";
 		cont += "<tr class='content-thead'><th>사용 여부</th>";
 		cont += "<td>" + contStatus(data.room_resdate, data.room_possible) + "</td></tr>";
 		cont += "<tr class='content-thead'><th>요청 사항</th>";
@@ -237,7 +238,7 @@ function sortView(data) {
 	} else {
 		$.each(data, function(index, vo) {
 			sort += "<tr onclick=getCont(" + vo["room_no"] + ");>";
-			sort += "<td>" + vo["room_resdate"] + "</td>";
+			sort += "<td>" + vo["room_resdate"].substr(0, 10) + "</td>";
 			sort += "<td>" + vo["room_no"] + "</td>";
 			sort += "<td>" + vo["room_name"] + "</td>";
 			sort += "<td>" + vo["room_mpeople"] + "명</td>";

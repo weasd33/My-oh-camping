@@ -46,7 +46,7 @@ function salesView(data) {
 		var eDate = data.eDate; // 끝 날짜
 		
 		$.each(allList, function(index, vo) {
-			resAll += "<tr><td>" + vo["room_resdate"] + "</td>";
+			resAll += "<tr><td>" + vo["room_resdate"].substr(0,10) + "</td>";
 			resAll += "<td>" + vo["room_name"] + "</td>";
 			resAll += "<td>" + AddComma(vo["room_price"]) + "원</td></tr>";
 		});

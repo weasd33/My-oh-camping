@@ -16,84 +16,88 @@
 		<!-- 기간으로 조회 -->
 		<if test='!start_date.equals("") and start_date != null and !end_date.equals("") and end_date != null'>
 			<if test='room.equals("all_room")'> <!-- (목록) 선택 기간 + 객실 전체 -->
-				SELECT * FROM CAMP_ROOM 
-				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 1 
+				SELECT * FROM SALES_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date}
 				ORDER BY ROOM_RESDATE ASC, ROOM_NAME ASC
 			</if>
 			<if test='!room.equals("all_room")'> <!-- (목록) 선택 기간 + 해당 객실 -->
-				SELECT * FROM CAMP_ROOM 
-				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_NAME = #{room} AND ROOM_POSSIBLE = 1 
+				SELECT * FROM SALES_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_NAME = #{room}  
 				ORDER BY ROOM_RESDATE ASC, ROOM_NAME ASC
 			</if>
 		</if>
 		<if test='start_date.equals("") or start_date == null or end_date.equals("") or end_date == null'>
 			<if test='date.equals("all_date")'>	<!-- 전체 기간 -->
 				<if test='room.equals("all_room")'>	<!-- (목록) 전체 기간 + 객실 전체 -->
-					SELECT * FROM ALLDATE_LIST
+					SELECT * FROM SALES_ROOM ORDER BY ROOM_RESDATE ASC, ROOM_NAME ASC
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (목록) 전체 기간 + 해당 객실 -->
-					SELECT * FROM CAMP_ROOM 
-					WHERE ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 ORDER BY 1 ASC
+					SELECT * FROM SALES_ROOM 
+					WHERE ROOM_NAME=#{room} ORDER BY 1 ASC
 				</if>
 			</if>
 			<if test='date.equals("today")'> <!-- 오늘 -->
 				<if test='room.equals("all_room")'> <!-- (목록) 오늘 + 객실 전체 -->
-					SELECT * FROM TODAY_LIST
+					SELECT * FROM SALES_ROOM WHERE ROOM_RESDATE = TO_CHAR(SYSDATE) ORDER BY 1, 2 ASC
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (목록) 오늘 + 해당 객실 -->
-					SELECT * FROM CAMP_ROOM 
-					WHERE ROOM_RESDATE = TO_CHAR(SYSDATE)
-				    AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 ORDER BY 1 ASC
+					SELECT * FROM SALES_ROOM 
+					WHERE ROOM_RESDATE = TO_CHAR(SYSDATE) AND ROOM_NAME=#{room} ORDER BY 1 ASC
 				</if>
 			</if>
 			<if test='date.equals("week")'> <!-- 1주일 -->
 				<if test='room.equals("all_room")'> <!-- (목록) 1주일 + 객실 전체 -->
-					SELECT * FROM WEEK_LIST
+					SELECT * FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(SYSDATE-7) AND TO_CHAR(SYSDATE) ORDER BY 1, 2 ASC
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (목록) 1주일 + 해당 객실 -->
-					SELECT * FROM CAMP_ROOM 
+					SELECT * FROM SALES_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(SYSDATE-7) AND TO_CHAR(SYSDATE)
-				    AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 ORDER BY 1 ASC
+				    AND ROOM_NAME=#{room} ORDER BY 1 ASC
 				</if>
 			</if>
 			<if test='date.equals("month")'> <!-- 1개월 -->
 				<if test='room.equals("all_room")'> <!-- (목록) 1개월 + 객실 전체 -->
-					SELECT * FROM MONTH_LIST
+					SELECT * FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -1)) AND TO_CHAR(SYSDATE) ORDER BY 1, 2 ASC
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (목록) 1개월 + 해당 객실 -->
-					SELECT * FROM CAMP_ROOM 
+					SELECT * FROM SALES_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -1)) AND TO_CHAR(SYSDATE)
-				    AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 ORDER BY 1 ASC
+				    AND ROOM_NAME=#{room} ORDER BY 1 ASC
 				</if>
 			</if>
 			<if test='date.equals("3month")'> <!-- 3개월 -->
 				<if test='room.equals("all_room")'> <!-- (목록) 3개월 + 객실 전체 -->
-					SELECT * FROM "3MONTH_LIST"
+					SELECT * FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3)) AND TO_CHAR(SYSDATE) ORDER BY 1, 2 ASC
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (목록) 3개월 + 해당 객실 -->
 					SELECT * FROM CAMP_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3)) AND TO_CHAR(SYSDATE)
-				    AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 ORDER BY 1 ASC
+				    AND ROOM_NAME=#{room} ORDER BY 1 ASC
 				</if>
 			</if>
 			<if test='date.equals("6month")'> <!-- 6개월 -->
 				<if test='room.equals("all_room")'> <!-- (목록) 6개월 + 객실 전체 -->
-					SELECT * FROM "6MONTH_LIST"
+					SELECT * FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -6)) AND TO_CHAR(SYSDATE) ORDER BY 1, 2 ASC
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (목록) 6개월 + 해당 객실 -->
-					SELECT * FROM CAMP_ROOM 
+					SELECT * FROM SALES_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -6)) AND TO_CHAR(SYSDATE)
-				    AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 ORDER BY 1 ASC
+				    AND ROOM_NAME=#{room} ORDER BY 1 ASC
 				</if>
 			</if>
 			<if test='date.equals("year")'> <!-- 1년 -->
 				<if test='room.equals("all_room")'> <!-- (목록) 1년 + 객실 전체 -->
-					SELECT * FROM YEAR_LIST
+					SELECT * FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -12)) AND TO_CHAR(SYSDATE) ORDER BY 1, 2 ASC
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (목록) 1년 + 해당 객실 -->
-					SELECT * FROM CAMP_ROOM 
+					SELECT * FROM SALES_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -12)) AND TO_CHAR(SYSDATE)
-				    AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 ORDER BY 1 ASC
+				    AND ROOM_NAME=#{room} ORDER BY 1 ASC
 				</if>
 			</if>
 		</if>
@@ -104,82 +108,85 @@
 		<!-- 기간으로 조회 -->
 		<if test='!start_date.equals("") and start_date != null and !end_date.equals("") and end_date != null'>
 			<if test='room.equals("all_room")'> <!-- (총액) 선택 기간 + 객실 전체 -->
-				SELECT SUM(ROOM_PRICE) AS ROOM_PRICE FROM CAMP_ROOM 
-				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 1
+				SELECT SUM(ROOM_PRICE) AS ROOM_PRICE FROM SALES_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date}
 			</if>
 			<if test='!room.equals("all_room")'> <!-- (총액) 선택 기간 + 해당 객실 -->
-				SELECT SUM(ROOM_PRICE) AS ROOM_PRICE FROM CAMP_ROOM 
-				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_NAME = #{room} AND ROOM_POSSIBLE = 1
+				SELECT SUM(ROOM_PRICE) AS ROOM_PRICE FROM SALES_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_NAME = #{room}
 			</if>
 		</if>
 		<if test='start_date.equals("") or start_date == null or end_date.equals("") or end_date == null'>
 			<if test='date.equals("all_date")'> <!-- 전체 기간 -->
 				<if test='room.equals("all_room")'> <!-- (총액) 전체 기간 + 객실 전체 -->
-					SELECT * FROM ALLDATE_TOTAL
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (총액) 전체 기간 + 해당 객실 -->
-					SELECT SUM(ROOM_PRICE) FROM CAMP_ROOM 
-					WHERE ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM WHERE ROOM_NAME=#{room}
 				</if>
 			</if>
 			<if test='date.equals("today")'> <!-- 오늘 -->
 				<if test='room.equals("all_room")'> <!-- (총액) 오늘 + 객실 전체 -->
-					SELECT * FROM TODAY_TOTAL
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM WHERE ROOM_RESDATE = TO_CHAR(SYSDATE)
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (총액) 오늘 + 해당 객실 -->
-					SELECT SUM(ROOM_PRICE) FROM CAMP_ROOM 
-					WHERE ROOM_RESDATE = TO_CHAR(SYSDATE) 
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
+					WHERE ROOM_RESDATE = TO_CHAR(SYSDATE) AND ROOM_NAME=#{room} 
 				</if>
 			</if>
 			<if test='date.equals("week")'> <!-- 1주일 -->
 				<if test='room.equals("all_room")'> <!-- (총액) 1주일 + 객실 전체 -->
-					SELECT * FROM WEEK_TOTAL
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(SYSDATE-7) AND TO_CHAR(SYSDATE)
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (총액) 1주일 + 해당 객실 -->
-					SELECT SUM(ROOM_PRICE) FROM CAMP_ROOM 
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(SYSDATE-7) AND TO_CHAR(SYSDATE)
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
+					AND ROOM_NAME=#{room}
 				</if>
 			</if>
 			<if test='date.equals("month")'> <!-- 1개월 -->
 				<if test='room.equals("all_room")'> <!-- (총액) 1개월 + 객실 전체 -->
-					SELECT * FROM MONTH_TOTAL
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -1)) AND TO_CHAR(SYSDATE)
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (총액) 1개월 + 해당 객실 -->
-					SELECT SUM(ROOM_PRICE) FROM CAMP_ROOM 
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -1)) AND TO_CHAR(SYSDATE)
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
+					AND ROOM_NAME=#{room}
 				</if>
 			</if>
 			<if test='date.equals("3month")'> <!-- 3개월 -->
 				<if test='room.equals("all_room")'> <!-- (총액) 3개월 + 객실 전체 -->
-					SELECT * FROM "3MONTH_TOTAL"
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3)) AND TO_CHAR(SYSDATE)
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (총액) 3개월 + 해당 객실 -->
-					SELECT SUM(ROOM_PRICE) FROM CAMP_ROOM 
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3)) AND TO_CHAR(SYSDATE)
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
+					AND ROOM_NAME=#{room}
 				</if>
 			</if>
 			<if test='date.equals("6month")'> <!-- 6개월 -->
 				<if test='room.equals("all_room")'> <!-- (총액) 6개월 + 객실 전체 -->
-					SELECT * FROM "6MONTH_TOTAL"
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -6)) AND TO_CHAR(SYSDATE)
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (총액) 6개월 + 해당 객실 -->
 					SELECT SUM(ROOM_PRICE) FROM CAMP_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -6)) AND TO_CHAR(SYSDATE)
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
+					AND ROOM_NAME=#{room}
 				</if>
 			</if>
 			<if test='date.equals("year")'> <!-- 1년 -->
 				<if test='room.equals("all_room")'> <!-- (총액) 1년 + 객실 전체 -->
-					SELECT * FROM YEAR_TOTAL
+					SELECT SUM(ROOM_PRICE) FROM SALES_ROOM 
+					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -12)) AND TO_CHAR(SYSDATE)
 				</if>
 				<if test='!room.equals("all_room")'> <!-- (총액) 1년 + 해당 객실 -->
 					SELECT SUM(ROOM_PRICE) FROM CAMP_ROOM 
 					WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -12)) AND TO_CHAR(SYSDATE)
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
+					AND ROOM_NAME=#{room}
 				</if>
 			</if>
 		</if>
@@ -191,15 +198,15 @@
 		<if test='!start_date.equals("") and start_date != null and !end_date.equals("") and end_date != null'>
 			<if test='room.equals("all_room")'> <!-- (통계) 선택 기간 + 객실 전체 -->
 				SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE, 
-				ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE FROM CAMP_ROOM 
-				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_POSSIBLE = 1 
-				GROUP BY ROOM_NAME ORDER BY ROOM_NAME ASC
+				ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE FROM SALES_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date}
+				GROUP BY ROOM_NAME ORDER BY 1 ASC
 			</if>
 			<if test='!room.equals("all_room")'> <!-- (통계) 선택 기간 + 해당 객실 -->
 				SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE, 
-				ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE FROM CAMP_ROOM 
-				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_NAME = #{room} AND ROOM_POSSIBLE = 1 
-				GROUP BY ROOM_NAME ORDER BY ROOM_NAME ASC
+				ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE FROM SALES_ROOM 
+				WHERE ROOM_RESDATE BETWEEN #{start_date} AND #{end_date} AND ROOM_NAME = #{room} 
+				GROUP BY ROOM_NAME ORDER BY 1 ASC
 			</if>
 		</if>
 		<if test='start_date.equals("") or start_date == null or end_date.equals("") or end_date == null'>
@@ -210,8 +217,7 @@
 				<if test='!room.equals("all_room")'> <!-- (톻계) 전체 기간 + 해당 객실-->
 					SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE,
 					ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE
-					FROM CAMP_ROOM WHERE ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1
-					GROUP BY ROOM_NAME
+					FROM SALES_ROOM WHERE ROOM_NAME=#{room} GROUP BY ROOM_NAME
 				</if>
 			</if>
 			<if test='date.equals("today")'> <!-- 오늘 -->
@@ -221,8 +227,8 @@
 				<if test='!room.equals("all_room")'> <!-- (톻계) 오늘 + 해당 객실-->
 					SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE,
 					ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE
-					FROM CAMP_ROOM WHERE ROOM_RESDATE = TO_CHAR(SYSDATE) 
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 GROUP BY ROOM_NAME
+					FROM SALES_ROOM WHERE ROOM_RESDATE = TO_CHAR(SYSDATE) 
+					AND ROOM_NAME=#{room} GROUP BY ROOM_NAME
 				</if>
 			</if>
 			<if test='date.equals("week")'> <!-- 1주일 -->
@@ -232,8 +238,8 @@
 				<if test='!room.equals("all_room")'> <!-- (톻계) 1주일 + 해당 객실-->
 					SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE,
 					ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE
-					FROM CAMP_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(SYSDATE-7) AND TO_CHAR(SYSDATE) 
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 GROUP BY ROOM_NAME
+					FROM SALES_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(SYSDATE-7) AND TO_CHAR(SYSDATE) 
+					AND ROOM_NAME=#{room} GROUP BY ROOM_NAME
 				</if>
 			</if>
 			<if test='date.equals("month")'> <!-- 1개월 -->
@@ -243,8 +249,8 @@
 				<if test='!room.equals("all_room")'> <!-- (톻계) 1개월 + 해당 객실-->
 					SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE,
 					ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE
-					FROM CAMP_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -1)) AND TO_CHAR(SYSDATE) 
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 GROUP BY ROOM_NAME
+					FROM SALES_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -1)) AND TO_CHAR(SYSDATE) 
+					AND ROOM_NAME=#{room} GROUP BY ROOM_NAME
 				</if>
 			</if>
 			<if test='date.equals("3month")'> <!-- 3개월 -->
@@ -254,8 +260,8 @@
 				<if test='!room.equals("all_room")'> <!-- (톻계) 3개월 + 해당 객실-->
 					SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE,
 					ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE
-					FROM CAMP_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3)) AND TO_CHAR(SYSDATE) 
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 GROUP BY ROOM_NAME
+					FROM SALES_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3)) AND TO_CHAR(SYSDATE) 
+					AND ROOM_NAME=#{room} GROUP BY ROOM_NAME
 				</if>
 			</if>
 			<if test='date.equals("6month")'> <!-- 6개월 -->
@@ -265,8 +271,8 @@
 				<if test='!room.equals("all_room")'> <!-- (톻계) 6개월 + 해당 객실-->
 					SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE,
 					ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE
-					FROM CAMP_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -6)) AND TO_CHAR(SYSDATE) 
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 GROUP BY ROOM_NAME
+					FROM SALES_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -6)) AND TO_CHAR(SYSDATE) 
+					AND ROOM_NAME=#{room} GROUP BY ROOM_NAME
 				</if>
 			</if>
 			<if test='date.equals("year")'> <!-- 1년 -->
@@ -276,8 +282,8 @@
 				<if test='!room.equals("all_room")'> <!-- (톻계) 1년 + 해당 객실-->
 					SELECT ROOM_NAME, SUM(ROOM_POSSIBLE) TOTAL_CNT, SUM(ROOM_PRICE) TOTAL_PRICE,
 					ROUND(RATIO_TO_REPORT(SUM(ROOM_PRICE)) OVER(), 3) * 100 AS PRICE_RATE
-					FROM CAMP_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -12)) AND TO_CHAR(SYSDATE) 
-					AND ROOM_NAME=#{room} AND ROOM_POSSIBLE = 1 GROUP BY ROOM_NAME
+					FROM SALES_ROOM WHERE ROOM_RESDATE BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -12)) AND TO_CHAR(SYSDATE) 
+					AND ROOM_NAME=#{room} GROUP BY ROOM_NAME
 				</if>
 			</if>
 		</if>

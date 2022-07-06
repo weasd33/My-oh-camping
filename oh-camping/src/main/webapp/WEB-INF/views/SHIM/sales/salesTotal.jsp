@@ -10,7 +10,7 @@
 <link href="<c:url value="/resources/SHIM/css/sales/main.css" />?18" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="<%=request.getContextPath() %>/resources/SHIM/js/salesTotal.js"></script>
+<script src="<%=request.getContextPath() %>/resources/SHIM/js/salesTotal.js?1"></script>
 </head>
 <body>
 
